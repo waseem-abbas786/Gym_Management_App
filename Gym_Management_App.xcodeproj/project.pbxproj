@@ -1,0 +1,607 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		ED9BC37B2E4490CD00040851 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED9BC37A2E4490CD00040851 /* FirebaseAnalytics */; };
+		ED9BC37E2E44930F00040851 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ED9BC37D2E44930F00040851 /* FirebaseAuth */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		ED9BC3592E448E5F00040851 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ED9BC33E2E448E5D00040851 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED9BC3452E448E5D00040851;
+			remoteInfo = Gym_Management_App;
+		};
+		ED9BC3632E448E5F00040851 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ED9BC33E2E448E5D00040851 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED9BC3452E448E5D00040851;
+			remoteInfo = Gym_Management_App;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		ED9BC3462E448E5D00040851 /* Gym_Management_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gym_Management_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED9BC3582E448E5F00040851 /* Gym_Management_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Gym_Management_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED9BC3622E448E5F00040851 /* Gym_Management_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Gym_Management_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		ED9BC3482E448E5D00040851 /* Gym_Management_App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Gym_Management_App;
+			sourceTree = "<group>";
+		};
+		ED9BC35B2E448E5F00040851 /* Gym_Management_AppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Gym_Management_AppTests;
+			sourceTree = "<group>";
+		};
+		ED9BC3652E448E5F00040851 /* Gym_Management_AppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Gym_Management_AppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		ED9BC3432E448E5D00040851 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED9BC37B2E4490CD00040851 /* FirebaseAnalytics in Frameworks */,
+				ED9BC37E2E44930F00040851 /* FirebaseAuth in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED9BC3552E448E5F00040851 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED9BC35F2E448E5F00040851 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		ED9BC33D2E448E5D00040851 = {
+			isa = PBXGroup;
+			children = (
+				ED9BC3482E448E5D00040851 /* Gym_Management_App */,
+				ED9BC35B2E448E5F00040851 /* Gym_Management_AppTests */,
+				ED9BC3652E448E5F00040851 /* Gym_Management_AppUITests */,
+				ED9BC37C2E44930F00040851 /* Frameworks */,
+				ED9BC3472E448E5D00040851 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ED9BC3472E448E5D00040851 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ED9BC3462E448E5D00040851 /* Gym_Management_App.app */,
+				ED9BC3582E448E5F00040851 /* Gym_Management_AppTests.xctest */,
+				ED9BC3622E448E5F00040851 /* Gym_Management_AppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ED9BC37C2E44930F00040851 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		ED9BC3452E448E5D00040851 /* Gym_Management_App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ED9BC36C2E448E5F00040851 /* Build configuration list for PBXNativeTarget "Gym_Management_App" */;
+			buildPhases = (
+				ED9BC3422E448E5D00040851 /* Sources */,
+				ED9BC3432E448E5D00040851 /* Frameworks */,
+				ED9BC3442E448E5D00040851 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				ED9BC3482E448E5D00040851 /* Gym_Management_App */,
+			);
+			name = Gym_Management_App;
+			packageProductDependencies = (
+				ED9BC37A2E4490CD00040851 /* FirebaseAnalytics */,
+				ED9BC37D2E44930F00040851 /* FirebaseAuth */,
+			);
+			productName = Gym_Management_App;
+			productReference = ED9BC3462E448E5D00040851 /* Gym_Management_App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		ED9BC3572E448E5F00040851 /* Gym_Management_AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ED9BC36F2E448E5F00040851 /* Build configuration list for PBXNativeTarget "Gym_Management_AppTests" */;
+			buildPhases = (
+				ED9BC3542E448E5F00040851 /* Sources */,
+				ED9BC3552E448E5F00040851 /* Frameworks */,
+				ED9BC3562E448E5F00040851 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ED9BC35A2E448E5F00040851 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				ED9BC35B2E448E5F00040851 /* Gym_Management_AppTests */,
+			);
+			name = Gym_Management_AppTests;
+			packageProductDependencies = (
+			);
+			productName = Gym_Management_AppTests;
+			productReference = ED9BC3582E448E5F00040851 /* Gym_Management_AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		ED9BC3612E448E5F00040851 /* Gym_Management_AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ED9BC3722E448E5F00040851 /* Build configuration list for PBXNativeTarget "Gym_Management_AppUITests" */;
+			buildPhases = (
+				ED9BC35E2E448E5F00040851 /* Sources */,
+				ED9BC35F2E448E5F00040851 /* Frameworks */,
+				ED9BC3602E448E5F00040851 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ED9BC3642E448E5F00040851 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				ED9BC3652E448E5F00040851 /* Gym_Management_AppUITests */,
+			);
+			name = Gym_Management_AppUITests;
+			packageProductDependencies = (
+			);
+			productName = Gym_Management_AppUITests;
+			productReference = ED9BC3622E448E5F00040851 /* Gym_Management_AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ED9BC33E2E448E5D00040851 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					ED9BC3452E448E5D00040851 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					ED9BC3572E448E5F00040851 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = ED9BC3452E448E5D00040851;
+					};
+					ED9BC3612E448E5F00040851 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = ED9BC3452E448E5D00040851;
+					};
+				};
+			};
+			buildConfigurationList = ED9BC3412E448E5D00040851 /* Build configuration list for PBXProject "Gym_Management_App" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = ED9BC33D2E448E5D00040851;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				ED9BC3792E4490CD00040851 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = ED9BC3472E448E5D00040851 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				ED9BC3452E448E5D00040851 /* Gym_Management_App */,
+				ED9BC3572E448E5F00040851 /* Gym_Management_AppTests */,
+				ED9BC3612E448E5F00040851 /* Gym_Management_AppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ED9BC3442E448E5D00040851 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED9BC3562E448E5F00040851 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED9BC3602E448E5F00040851 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		ED9BC3422E448E5D00040851 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED9BC3542E448E5F00040851 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED9BC35E2E448E5F00040851 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		ED9BC35A2E448E5F00040851 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED9BC3452E448E5D00040851 /* Gym_Management_App */;
+			targetProxy = ED9BC3592E448E5F00040851 /* PBXContainerItemProxy */;
+		};
+		ED9BC3642E448E5F00040851 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED9BC3452E448E5D00040851 /* Gym_Management_App */;
+			targetProxy = ED9BC3632E448E5F00040851 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		ED9BC36A2E448E5F00040851 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		ED9BC36B2E448E5F00040851 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		ED9BC36D2E448E5F00040851 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.waseem.Gym-Management-App";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		ED9BC36E2E448E5F00040851 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.waseem.Gym-Management-App";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		ED9BC3702E448E5F00040851 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.waseem.Gym-Management-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Gym_Management_App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Gym_Management_App";
+			};
+			name = Debug;
+		};
+		ED9BC3712E448E5F00040851 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.waseem.Gym-Management-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Gym_Management_App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Gym_Management_App";
+			};
+			name = Release;
+		};
+		ED9BC3732E448E5F00040851 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.waseem.Gym-Management-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Gym_Management_App;
+			};
+			name = Debug;
+		};
+		ED9BC3742E448E5F00040851 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43RR996G2K;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.waseem.Gym-Management-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Gym_Management_App;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		ED9BC3412E448E5D00040851 /* Build configuration list for PBXProject "Gym_Management_App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED9BC36A2E448E5F00040851 /* Debug */,
+				ED9BC36B2E448E5F00040851 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ED9BC36C2E448E5F00040851 /* Build configuration list for PBXNativeTarget "Gym_Management_App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED9BC36D2E448E5F00040851 /* Debug */,
+				ED9BC36E2E448E5F00040851 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ED9BC36F2E448E5F00040851 /* Build configuration list for PBXNativeTarget "Gym_Management_AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED9BC3702E448E5F00040851 /* Debug */,
+				ED9BC3712E448E5F00040851 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ED9BC3722E448E5F00040851 /* Build configuration list for PBXNativeTarget "Gym_Management_AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED9BC3732E448E5F00040851 /* Debug */,
+				ED9BC3742E448E5F00040851 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ED9BC3792E4490CD00040851 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ED9BC37A2E4490CD00040851 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED9BC3792E4490CD00040851 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		ED9BC37D2E44930F00040851 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED9BC3792E4490CD00040851 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = ED9BC33E2E448E5D00040851 /* Project object */;
+}
