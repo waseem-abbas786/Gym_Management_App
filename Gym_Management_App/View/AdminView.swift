@@ -5,35 +5,164 @@
 //  Created by Waseem Abbas on 07/08/2025.
 //
 import SwiftUI
+import CoreData
 
 struct AdminView: View {
     @Binding var isLoggedIn: Bool
     @StateObject private var viewModel = SignInViewmodel()
+    @Environment(\.managedObjectContext) private var viewContext
+       @StateObject private var adminVM: AdminViewModel
+       init(isLoggedIn: Binding<Bool>, context: NSManagedObjectContext) {
+           self._isLoggedIn = isLoggedIn
+           self._adminVM = StateObject(wrappedValue: AdminViewModel(context: context))
+       }
 
     var body: some View {
         NavigationStack {
-            VStack {
-                Text("Welcome Admin 🏋️‍♂️")
-                    .font(.largeTitle)
+            ZStack {
+                Image("admin")
+                    .resizable()
+                    .opacity(0.8)
+                    .ignoresSafeArea()
+                VStack {
+                    if adminVM.admins.isEmpty {
+                        ContentUnavailableView (
+                            "No Gym Owner Yet",
+                            systemImage: "person.crop.circle.badge.xmark",
+                            description: Text("Tap the Add Button To Add a Gym Owner!")
+                        )
+                    } else {
+                        List {
+                            ForEach(adminVM.admins, id: \.id) { admin in
+                                HStack {
+                                    if let imagePath = admin.profileImagePath,
+                                       let image = adminVM.loadImageFromFileManager(path: imagePath) {
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 50, height: 50)
+                                            .clipShape(Circle())
+                                    } else {
+                                        Circle()
+                                            .fill(Color.gray.opacity(0.3))
+                                            .frame(width: 50, height: 50)
+                                    }
 
-                Button("Log Out") {
-                    do {
-                        try viewModel.signOut()
-                        isLoggedIn = false
-                    } catch {
-                        print("Logout failed: \(error.localizedDescription)")
+                                    VStack(alignment: .leading) {
+                                        Text(admin.name ?? "No Name")
+                                            .font(.headline)
+                                        Text(admin.gymName ?? "No Gym Name")
+                                            .font(.subheadline)
+                                        Text(admin.gymAddress ?? "No Address")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+                            .onDelete(perform: adminVM.deleteAdmins)
+                        }
+                       
                     }
                 }
-                .padding(.top)
             }
+           
+            
+            
+            
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Log Out") {
+                          do {
+                          try viewModel.signOut()
+                                isLoggedIn = false
+                         } catch {
+                         print("Logout failed: \(error.localizedDescription)")
+                                }
+                            }
+                }
+            }
+            .toolbar {
+                if adminVM.admins.isEmpty {
+                    ToolbarItem(placement: .topBarLeading) {
+                        NavigationLink("Manage Admin") {
+                            AddAdminSheet(viewModel: adminVM)
+                        }
+                    }
+                }
+            }
+            .foregroundStyle(Color.white)
         }
     }
 }
 
 
 #Preview {
-    NavigationStack {
-        AdminView(isLoggedIn: .constant(false))
-    }
+    AdminView(isLoggedIn: .constant(false),
+    context: PersistenceController.shared.container.viewContext
+    )
    
 }
+import SwiftUI
+import PhotosUI
+
+struct AddAdminSheet: View {
+    @ObservedObject var viewModel: AdminViewModel
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Profile Photo") {
+                    PhotosPicker(selection: $viewModel.selectedPhoto, matching: .images) {
+                        if let profileImage = viewModel.profileImage {
+                            Image(uiImage: profileImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                        } else {
+                            Circle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 100, height: 100)
+                                .overlay {
+                                    Image(systemName: "camera.fill")
+                                        .foregroundColor(.gray)
+                                }
+                        }
+                    }
+                    .onChange(of: viewModel.selectedPhoto) { _, newValue in
+                        Task {
+                            if let data = try? await newValue?.loadTransferable(type: Data.self),
+                               let uiImage = UIImage(data: data) {
+                                await MainActor.run {
+                                    viewModel.profileImage = uiImage
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
+                Section("Admin Details") {
+                    TextField("Name", text: $viewModel.name)
+                    TextField("Gym Name", text: $viewModel.gymName)
+                    TextField("Gym Address", text: $viewModel.gymAddress)
+                    SecureField("Password", text: $viewModel.password)
+                }
+            }
+            .navigationTitle("Add Admin")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        viewModel.addAdmin()
+                        dismiss()
+                        viewModel.resetForm()
+                    }
+                    .disabled(viewModel.name.isEmpty || viewModel.gymName.isEmpty || viewModel.gymAddress.isEmpty || viewModel.password.isEmpty)
+                }
+            }
+        }
+    }
+}
+

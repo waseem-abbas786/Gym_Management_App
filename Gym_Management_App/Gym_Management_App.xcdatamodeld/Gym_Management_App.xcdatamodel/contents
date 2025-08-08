@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24G84" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AdminEntity" representedClassName="AdminEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="gymAddress" optional="YES" attributeType="String"/>
+        <attribute name="gymName" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="profileImagePath" optional="YES" attributeType="String"/>
+        <relationship name="trainer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrainerEntity" inverseName="admin" inverseEntity="TrainerEntity"/>
+    </entity>
+    <entity name="MemberEntity" representedClassName="MemberEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="membershipType" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="phone" optional="YES" attributeType="String"/>
+        <attribute name="profileImagePath" optional="YES" attributeType="String"/>
+        <relationship name="trainer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrainerEntity" inverseName="member" inverseEntity="TrainerEntity"/>
+    </entity>
+    <entity name="TrainerEntity" representedClassName="TrainerEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="number" optional="YES" attributeType="String"/>
+        <attribute name="profileImagePath" optional="YES" attributeType="String"/>
+        <attribute name="speciality" optional="YES" attributeType="String"/>
+        <relationship name="admin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AdminEntity" inverseName="trainer" inverseEntity="AdminEntity"/>
+        <relationship name="member" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MemberEntity" inverseName="trainer" inverseEntity="MemberEntity"/>
     </entity>
 </model>

@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+
     @StateObject private var viewModel = SignInViewmodel()
     @State private var isLoggedIn = false
 
     var body: some View {
         ZStack {
             if isLoggedIn {
-                AdminView(isLoggedIn: $isLoggedIn)
+                AdminView(isLoggedIn: $isLoggedIn, context: viewContext)
             } else {
                 NavigationStack {
                     SignInScreen(isLoggedIn: $isLoggedIn)
