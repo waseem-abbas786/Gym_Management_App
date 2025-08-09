@@ -6,6 +6,7 @@ struct Gym_Management_AppApp: App {
     let persistenceController = PersistenceController.shared
     init () {
         FirebaseApp.configure()
+        print("configured firebase")
     }
     var body: some Scene {
         WindowGroup {

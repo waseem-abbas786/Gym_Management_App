@@ -31,21 +31,22 @@ struct AdminView: View {
                             systemImage: "person.crop.circle.badge.xmark",
                             description: Text("Tap the Add Button To Add a Gym Owner!")
                         )
+                        .foregroundStyle(Color.red)
                     } else {
                         List {
-                            ForEach(adminVM.admins, id: \.id) { admin in
-                                HStack {
+                            ForEach(adminVM.admins, id:\.id) { admin in
+                                HStack() {
                                     if let imagePath = admin.profileImagePath,
                                        let image = adminVM.loadImageFromFileManager(path: imagePath) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(width: 50, height: 50)
+                                            .frame(width: 70, height: 70)
                                             .clipShape(Circle())
                                     } else {
                                         Circle()
                                             .fill(Color.gray.opacity(0.3))
-                                            .frame(width: 50, height: 50)
+                                            .frame(width: 70, height: 70)
                                     }
 
                                     VStack(alignment: .leading) {
@@ -57,11 +58,17 @@ struct AdminView: View {
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
+                                    
                                 }
-                            }
+                                .id(admin.id)
+                              }
+            
                             .onDelete(perform: adminVM.deleteAdmins)
                         }
                        
+                      
+                        .scrollContentBackground(.hidden)
+                        
                     }
                 }
             }
@@ -71,6 +78,14 @@ struct AdminView: View {
             
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
+                      NavigationLink("Trainers🏋🏻‍♀️") {
+                          TrainerView(
+                                  context: viewContext,
+                                  isAdminAvailable: !adminVM.admins.isEmpty
+                              )
+                      }
+                  }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Log Out") {
                           do {
                           try viewModel.signOut()
@@ -79,9 +94,11 @@ struct AdminView: View {
                          print("Logout failed: \(error.localizedDescription)")
                                 }
                             }
+//                    .foregroundStyle(Color.white)
+//                    .frame(width: 100, height: 50)
+//                    .background(Color.blue)
+//                    .clipShape(.buttonBorder)
                 }
-            }
-            .toolbar {
                 if adminVM.admins.isEmpty {
                     ToolbarItem(placement: .topBarLeading) {
                         NavigationLink("Manage Admin") {
@@ -89,8 +106,8 @@ struct AdminView: View {
                         }
                     }
                 }
+            
             }
-            .foregroundStyle(Color.white)
         }
     }
 }
@@ -111,6 +128,11 @@ struct AddAdminSheet: View {
 
     var body: some View {
         NavigationStack {
+            ZStack {
+                Image("admin")
+                    .resizable()
+                    .opacity(0.8)
+                    .ignoresSafeArea()
             Form {
                 Section("Profile Photo") {
                     PhotosPicker(selection: $viewModel.selectedPhoto, matching: .images) {
@@ -140,18 +162,23 @@ struct AddAdminSheet: View {
                             }
                         }
                     }
-
-
+                    
+                    
                 }
-
+                .listRowBackground(Color.white.opacity(0.9))
                 Section("Admin Details") {
                     TextField("Name", text: $viewModel.name)
                     TextField("Gym Name", text: $viewModel.gymName)
                     TextField("Gym Address", text: $viewModel.gymAddress)
                     SecureField("Password", text: $viewModel.password)
                 }
+                .listRowBackground(Color.white.opacity(0.9))
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
+        }
             .navigationTitle("Add Admin")
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
@@ -159,7 +186,13 @@ struct AddAdminSheet: View {
                         dismiss()
                         viewModel.resetForm()
                     }
-                    .disabled(viewModel.name.isEmpty || viewModel.gymName.isEmpty || viewModel.gymAddress.isEmpty || viewModel.password.isEmpty)
+                    .disabled(viewModel.isSaveButtonDisabled)
+                    .foregroundStyle(viewModel.isSaveButtonDisabled ? Color.red : Color.white)
+                    .animation(.easeInOut(duration: 2.0), value: viewModel.isSaveButtonDisabled)
+                    .frame(width: 100, height: 50)
+                    .background(Color.white.opacity(0.8))
+                    .clipShape(.buttonBorder)
+                    
                 }
             }
         }

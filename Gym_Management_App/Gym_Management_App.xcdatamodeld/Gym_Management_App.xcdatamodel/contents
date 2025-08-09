@@ -6,7 +6,6 @@
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="profileImagePath" optional="YES" attributeType="String"/>
-        <relationship name="trainer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrainerEntity" inverseName="admin" inverseEntity="TrainerEntity"/>
     </entity>
     <entity name="MemberEntity" representedClassName="MemberEntity" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
@@ -14,7 +13,6 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="phone" optional="YES" attributeType="String"/>
         <attribute name="profileImagePath" optional="YES" attributeType="String"/>
-        <relationship name="trainer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrainerEntity" inverseName="member" inverseEntity="TrainerEntity"/>
     </entity>
     <entity name="TrainerEntity" representedClassName="TrainerEntity" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
@@ -22,7 +20,5 @@
         <attribute name="number" optional="YES" attributeType="String"/>
         <attribute name="profileImagePath" optional="YES" attributeType="String"/>
         <attribute name="speciality" optional="YES" attributeType="String"/>
-        <relationship name="admin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AdminEntity" inverseName="trainer" inverseEntity="AdminEntity"/>
-        <relationship name="member" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MemberEntity" inverseName="trainer" inverseEntity="MemberEntity"/>
     </entity>
 </model>

@@ -5,7 +5,7 @@
 //  Created by Waseem Abbas on 07/08/2025.
 //
 
-import SwiftUI
+
 
 import SwiftUI
 
@@ -16,7 +16,7 @@ struct SignUpScreen: View {
     @State private var password = ""
     @State private var showError = false
     @State private var errorMessage = ""
-
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         ZStack {
             Image("signin")
@@ -41,27 +41,32 @@ struct SignUpScreen: View {
                     .background(Color.white)
                     .clipShape(.buttonBorder)
                     .padding(.horizontal)
-
-                Button("Sign Up") {
-                    Task {
-                        do {
-                            _ = try await viewModel.signUp(email: email, password: password)
-                            isLoggedIn = true
-                        } catch {
-                            await MainActor.run {
-                                showError = true
-                                errorMessage = "Unable To SignUp try Again!"
+                 Text("SignUp")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 55)
+                    .foregroundStyle(Color.white)
+                    .background(Color.blue)
+                    .clipShape(.buttonBorder)
+                    .shadow(color: .white, radius: 10, y: 10)
+                    .padding()
+                    .onTapGesture {
+                        Task {
+                            do {
+                                _ = try await viewModel.signUp(email: email, password: password)
+                                await MainActor.run {
+                                    isLoggedIn = true
+                                    dismiss()
+                                }
+                            } catch {
+                                await MainActor.run {
+                                    showError = true
+                                    errorMessage = "The Email Or Password is Invalid⚠️"
+                                }
                             }
                         }
                     }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 55)
-                .foregroundStyle(Color.white)
-                .background(Color.blue)
-                .clipShape(.buttonBorder)
-                .shadow(color: .white, radius: 10, y: 10)
-                .padding()
+
+               
             }
         }
 

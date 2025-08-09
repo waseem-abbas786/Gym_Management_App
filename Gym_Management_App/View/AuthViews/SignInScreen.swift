@@ -43,26 +43,28 @@ struct SignInScreen: View {
                     .clipShape(.buttonBorder)
                     .padding(.horizontal)
 
-                Button("Sign In") {
-                    Task {
-                        do {
-                            _ = try await viewModel.signIn(email: email, password: password)
-                            isLoggedIn = true
-                        } catch {
-                            await MainActor.run {
-                                showError = true
-                                errorMessage = error.localizedDescription
+                Text("SignIn")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 55)
+                    .foregroundStyle(Color.white)
+                    .background(Color.blue)
+                    .clipShape(.buttonBorder)
+                    .shadow(color: .white, radius: 10, y: 10)
+                    .padding()
+                    .onTapGesture {
+                        Task {
+                            do {
+                                _ = try await viewModel.signIn(email: email, password: password)
+                                isLoggedIn = true
+                            } catch {
+                                await MainActor.run {
+                                    showError = true
+                                    errorMessage = error.localizedDescription
+                                }
                             }
                         }
                     }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 55)
-                .foregroundStyle(Color.white)
-                .background(Color.blue)
-                .clipShape(.buttonBorder)
-                .shadow(color: .white, radius: 10, y: 10)
-                .padding()
+            
 
                 NavigationLink("Don't have an account? Sign Up", destination: SignUpScreen(isLoggedIn: $isLoggedIn))
                     .padding(.top, 20)

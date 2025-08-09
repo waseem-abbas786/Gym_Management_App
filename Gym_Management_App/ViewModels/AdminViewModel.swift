@@ -4,7 +4,7 @@ import CoreData
 import FirebaseAuth
 import UIKit
 import _PhotosUI_SwiftUI
-class AdminViewModel : ObservableObject {
+class AdminViewModel : ObservableObject, Identifiable {
     @Published var name: String = ""
     @Published var gymName: String = ""
     @Published var gymAddress: String = ""
@@ -13,8 +13,7 @@ class AdminViewModel : ObservableObject {
     @Published var profileImage: UIImage?
     
     @Published var admins : [AdminEntity] = []
-    @Published var loggedInEmail : String? = Auth.auth().currentUser?.email
-    
+
     private let context : NSManagedObjectContext
     
     init (context : NSManagedObjectContext) {
@@ -31,20 +30,28 @@ class AdminViewModel : ObservableObject {
         }
     }
 //    MARK: func to add a new admin
-    func addAdmin () {
+    func addAdmin() {
         let newAdmin = AdminEntity(context: context)
         newAdmin.id = UUID()
         newAdmin.name = name
         newAdmin.gymName = gymName
         newAdmin.gymAddress = gymAddress
         
+        // Save image and store path
+        if let image = profileImage {
+            let savedFileName = saveImageToFileManager(image: image)
+            newAdmin.profileImagePath = savedFileName
+            print("Saved image filename: \(savedFileName)")
+        }
+        
         do {
             try context.save()
             fetchAdmins()
         } catch  {
-            print("Error saving Amin")
+            print("Error saving Admin: \(error.localizedDescription)")
         }
     }
+
 //    MARK: save Image to filemanager
     private func saveImageToFileManager(image: UIImage) -> String {
         let filename = UUID().uuidString + ".jpg"
@@ -90,5 +97,9 @@ class AdminViewModel : ObservableObject {
             print("Failed to delete admin: \(error.localizedDescription)")
         }
     }
+    var isSaveButtonDisabled: Bool {
+          name.isEmpty || gymName.isEmpty || gymAddress.isEmpty || password.isEmpty
+      }
 
+   
 }
