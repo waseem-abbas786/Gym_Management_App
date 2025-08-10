@@ -57,11 +57,8 @@ class MemberViewModel : ObservableObject {
         }
     }
 
-    func deleteMember(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let member = members[index]
-            context.delete(member)
-        }
+    func deleteMember(member: MemberEntity) {
+        context.delete(member)
         do {
             try context.save()
             fetchMembers()

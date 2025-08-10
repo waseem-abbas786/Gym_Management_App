@@ -4,18 +4,31 @@
 //
 //  Created by Waseem Abbas on 10/08/2025.
 //
-
-
-
 import SwiftUI
 import PhotosUI
 
 struct MemberView: View {
+    @State var searchText = ""
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject var memberVM: MemberViewModel
+    
+    @State private var showDeleteAlert = false
+    @State private var memberToDelete: MemberEntity?
 
     init(context: NSManagedObjectContext) {
         self._memberVM = StateObject(wrappedValue: MemberViewModel(context: context))
+    }
+    
+    var filteredMembers: [MemberEntity] {
+        if searchText.isEmpty {
+            return memberVM.members
+        } else {
+            return memberVM.members.filter {
+                ($0.name ?? "").localizedCaseInsensitiveContains(searchText) ||
+                ($0.membershipType ?? "").localizedCaseInsensitiveContains(searchText) ||
+                ($0.age ?? "").localizedCaseInsensitiveContains(searchText)
+            }
+        }
     }
 
     var body: some View {
@@ -34,9 +47,11 @@ struct MemberView: View {
                             description: Text("Tap the Add Button to Add a Member!")
                         )
                         .foregroundStyle(Color.white)
+                        .transition(.opacity.combined(with: .scale))
+                        .animation(.easeInOut(duration: 0.4), value: memberVM.members.isEmpty)
                     } else {
                         List {
-                            ForEach(memberVM.members, id: \.id) { member in
+                            ForEach(filteredMembers, id: \.id) { member in
                                 HStack {
                                     if let imagePath = member.profileImagePath,
                                        let image = memberVM.loadImageFromFileManager(path: imagePath) {
@@ -54,20 +69,39 @@ struct MemberView: View {
                                     VStack(alignment: .leading) {
                                         Text(member.name ?? "No Name")
                                             .font(.headline)
+                                            .foregroundStyle(Color.white)
                                         Text(member.age ?? "no age")
                                             .font(.subheadline)
+                                            .foregroundStyle(Color.yellow)
+                                            .bold()
                                         Text(member.membershipType ?? "No Membership Type")
                                             .font(.subheadline)
+                                            .foregroundStyle(Color.white)
                                         Text(member.number ?? "No Number")
                                             .font(.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.yellow)
+                                            .bold()
                                     }
                                 }
+                                .frame(height: 100)
                                 .id(member.id)
+                                .listRowBackground(Color.black.opacity(0.5))
+                                .shadow(radius: 5)
+                                Divider()
+                                    .frame(height: 10)
+                                    .listRowBackground(Color.white.opacity(0.0))
                             }
-                            .onDelete(perform: memberVM.deleteMember)
+                            .onDelete { indexSet in
+                                if let index = indexSet.first {
+                                    // Find the corresponding member from filteredMembers
+                                    memberToDelete = filteredMembers[index]
+                                    showDeleteAlert = true
+                                }
+                            }
                         }
                         .scrollContentBackground(.hidden)
+                        .transition(.slide)
+                        .animation(.easeInOut(duration: 0.5), value: memberVM.members)
                     }
                 }
             }
@@ -85,9 +119,25 @@ struct MemberView: View {
             .onAppear {
                 memberVM.fetchMembers()
             }
+            .navigationTitle("Members")
+            .searchable(text: $searchText, placement: .automatic, prompt: "Search by Name, Age, or Type")
+            .alert("Delete Member?", isPresented: $showDeleteAlert) {
+                Button("Yes", role: .destructive) {
+                    if let member = memberToDelete {
+                        memberVM.deleteMember(member: member)
+                    }
+                    memberToDelete = nil
+                }
+                Button("No", role: .cancel) {
+                    memberToDelete = nil
+                }
+            } message: {
+                Text("Are you sure you want to delete this member?")
+            }
         }
     }
 }
+
 
 #Preview {
     MemberView(context: PersistenceController.shared.container.viewContext)
@@ -147,7 +197,7 @@ struct AddMemberSheet: View {
                     Section("Member Details") {
                         TextField("Name", text: $viewModel.name)
                         TextField("Phone Number", text: $viewModel.number)
-                        TextField("Age", text: $viewModel.age)
+                       TextField("Age", text: $viewModel.age)
 
                         Picker("Membership Type", selection: $viewModel.membershipType) {
                             ForEach(MembershipType.allCases) { type in
@@ -168,7 +218,7 @@ struct AddMemberSheet: View {
                         dismiss()
                     }
                     .disabled(viewModel.isSaveButtonDisabled)
-                    .foregroundStyle(viewModel.isButtonvalid ? Color.red : Color.white)
+//                    .foregroundStyle(viewModel.isButtonvalid ? Color.red : Color.white)
                     .animation(.easeInOut(duration: 2.0), value: viewModel.isSaveButtonDisabled)
                     .frame(width: 100, height: 50)
                     .background(Color.white.opacity(0.8))
@@ -178,3 +228,4 @@ struct AddMemberSheet: View {
         }
     }
 }
+

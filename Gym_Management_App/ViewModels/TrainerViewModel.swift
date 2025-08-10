@@ -77,18 +77,16 @@ class TrainerViewModel : ObservableObject {
     private func getDocumentsDirectory () -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
-    func deleteTrainer(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let trainer = trainers[index]
-            context.delete(trainer)
-        }
+    func deleteTrainer(trainer: TrainerEntity) {
+        context.delete(trainer)
         do {
             try context.save()
-            fetchTrainers() // reload list after deletion
+            fetchTrainers()
         } catch {
-            print("Failed to delete trainer: \(error.localizedDescription)")
+            print("Error deleting trainer: \(error.localizedDescription)")
         }
     }
+
 
     func resetForm() {
         name = ""

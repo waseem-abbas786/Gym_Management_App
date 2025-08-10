@@ -28,7 +28,7 @@ struct PersistenceController {
         sampleMember.name = "no Name"
         sampleMember.membershipType = "simple"
         sampleMember.number = "83458934"
-        sampleMember.age = "no age"
+       sampleMember.age = "no age"
         sampleMember.profileImagePath = nil
 
         do {

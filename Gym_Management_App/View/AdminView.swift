@@ -11,22 +11,42 @@ struct AdminView: View {
     @Binding var isLoggedIn: Bool
     @StateObject private var viewModel = SignInViewmodel()
     @Environment(\.managedObjectContext) private var viewContext
-       @StateObject private var adminVM: AdminViewModel
-       init(isLoggedIn: Binding<Bool>, context: NSManagedObjectContext) {
-           self._isLoggedIn = isLoggedIn
-           self._adminVM = StateObject(wrappedValue: AdminViewModel(context: context))
-       }
+    @StateObject private var adminVM: AdminViewModel
+    @StateObject private var memberVM: MemberViewModel
+    @StateObject private var trainerVM: TrainerViewModel
+
+    init(isLoggedIn: Binding<Bool>, context: NSManagedObjectContext) {
+        self._isLoggedIn = isLoggedIn
+        self._adminVM = StateObject(wrappedValue: AdminViewModel(context: context))
+        self._memberVM = StateObject(wrappedValue: MemberViewModel(context: context))
+        self._trainerVM = StateObject(wrappedValue: TrainerViewModel(context: context))
+    }
+
+    let gymSlides: [(quote: String, image: String)] = [
+        ("No pain, no gain.", "bg1"),
+        ("Train insane or remain the same.", "bg2"),
+        ("Sweat is just fat crying.", "bg3"),
+        ("Push yourself because no one else will do it for you.", "bg4"),
+        ("The body achieves what the mind believes.", "bg5"),
+        ("Don’t limit your challenges, challenge your limits.", "bg6"),
+        ("Strong is the new sexy.", "bg7"),
+        ("Make yourself stronger than your excuses.", "bg8")
+    ]
+
+    @State private var currentIndex = 0
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Image("muscule")
                     .resizable()
+                    .scaledToFill()
                     .opacity(0.9)
                     .ignoresSafeArea()
+
                 VStack {
                     if adminVM.admins.isEmpty {
-                        ContentUnavailableView (
+                        ContentUnavailableView(
                             "No Gym Owner Yet",
                             systemImage: "person.crop.circle.badge.xmark",
                             description: Text("Tap the Add Button To Add a Gym Owner!")
@@ -35,8 +55,8 @@ struct AdminView: View {
                         .bold()
                     } else {
                         List {
-                            ForEach(adminVM.admins, id:\.id) { admin in
-                                HStack() {
+                            ForEach(adminVM.admins, id: \.id) { admin in
+                                HStack(alignment: .center, spacing: 12) {
                                     if let imagePath = admin.profileImagePath,
                                        let image = adminVM.loadImageFromFileManager(path: imagePath) {
                                         Image(uiImage: image)
@@ -50,26 +70,48 @@ struct AdminView: View {
                                             .frame(width: 70, height: 70)
                                     }
 
-                                    VStack(alignment: .leading) {
+                                    VStack(alignment: .leading, spacing: 4) {
                                         Text(admin.name ?? "No Name")
                                             .font(.headline)
+                                            .foregroundColor(.white)
                                         Text(admin.gymName ?? "No Gym Name")
                                             .font(.subheadline)
+                                            .foregroundColor(.white.opacity(0.8))
                                         Text(admin.gymAddress ?? "No Address")
                                             .font(.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.white.opacity(0.6))
                                     }
                                 }
-                                .id(admin.id)
-                              }
-            
+                                .padding()
+                                .background(Color.black.opacity(0.3))
+                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                .listRowBackground(Color.clear)
+                            }
                             .onDelete(perform: adminVM.deleteAdmins)
+                            
+                            HStack(spacing: 16) {
+                                statCard(title: "Total Members",
+                                         count: memberVM.members.count)
+                                statCard(title: "Total Trainers",
+                                         count: trainerVM.trainers.count)
+                            }
+                            .listRowBackground(Color.clear)
+                            Section {
+                                GymQuoteSlider(slides: gymSlides)
+                                    .listRowBackground(Color.clear)
+                            }
+                 
                         }
                         .scrollContentBackground(.hidden)
-                     }
+                    }
                 }
             }
-              .toolbar {
+            .onAppear {
+                adminVM.fetchAdmins()
+                memberVM.fetchMembers()
+                trainerVM.fetchTrainers()
+            }
+            .toolbar {
                 if !adminVM.admins.isEmpty {
                     ToolbarItem(placement: .topBarLeading) {
                         NavigationLink("Members") {
@@ -77,27 +119,25 @@ struct AdminView: View {
                         }
                         .foregroundStyle(Color.white)
                     }
-                }
-                if !adminVM.admins.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
-                          NavigationLink("Trainers🏋🏻‍♀️") {
-                              TrainerView(
-                                      context: viewContext,
-                                      isAdminAvailable: !adminVM.admins.isEmpty
-                                  )
-                          }
-                          .foregroundStyle(Color.white)
-                      }
+                        NavigationLink("Trainers🏋🏻‍♀️") {
+                            TrainerView(
+                                context: viewContext,
+                                isAdminAvailable: !adminVM.admins.isEmpty
+                            )
+                        }
+                        .foregroundStyle(Color.white)
+                    }
                 }
-                 ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Log Out") {
-                          do {
-                          try viewModel.signOut()
-                                isLoggedIn = false
-                         } catch {
-                         print("Logout failed: \(error.localizedDescription)")
-                                }
-                            }
+                        do {
+                            try viewModel.signOut()
+                            isLoggedIn = false
+                        } catch {
+                            print("Logout failed: \(error.localizedDescription)")
+                        }
+                    }
                     .foregroundStyle(Color.white)
                 }
                 if adminVM.admins.isEmpty {
@@ -108,20 +148,35 @@ struct AdminView: View {
                         .foregroundStyle(Color.white)
                     }
                 }
-            
             }
-            
         }
+    }
+
+    private func statCard(title: String, count: Int) -> some View {
+        VStack {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+            Text("\(count)")
+                .font(.largeTitle)
+                .bold()
+                .foregroundColor(.yellow)
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.black.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .shadow(radius: 4)
     }
 }
 
-
 #Preview {
-    AdminView(isLoggedIn: .constant(false),
-    context: PersistenceController.shared.container.viewContext
+    AdminView(
+        isLoggedIn: .constant(false),
+        context: PersistenceController.shared.container.viewContext
     )
-   
 }
+
 import SwiftUI
 import PhotosUI
 
@@ -202,4 +257,55 @@ struct AddAdminSheet: View {
     }
 }
 
+import SwiftUI
+
+struct GymQuoteSlider: View {
+    let slides: [(quote: String, image: String)]
+    @State private var currentIndex = 0
+    @State private var timer: Timer? = nil
+    
+    var body: some View {
+        ZStack {
+            Image(slides[currentIndex].image)
+                .resizable()
+                .scaledToFill()
+                .frame(height: 350)
+                .clipped()
+                .cornerRadius(22)
+                .shadow(radius: 5)
+                .transition(.opacity)
+            Color.black.opacity(0.4)
+                .cornerRadius(22)
+            Text(slides[currentIndex].quote)
+                .font(.headline)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+                .transition(.opacity)
+        }
+        .padding(.top, 40)
+        .frame(maxWidth: .infinity)
+        .frame(height: 350)
+        .listRowBackground(Color.clear)
+        .onAppear {
+            startTimer()
+        }
+        .onDisappear {
+            stopTimer()
+        }
+    }
+    
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { _ in
+            withAnimation(.easeInOut) {
+                currentIndex = (currentIndex + 1) % slides.count
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+}
 

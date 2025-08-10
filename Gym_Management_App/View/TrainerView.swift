@@ -12,10 +12,26 @@ struct TrainerView: View {
 
     let isAdminAvailable: Bool
 
-      init(context: NSManagedObjectContext, isAdminAvailable: Bool) {
-          self._trainerVM = StateObject(wrappedValue: TrainerViewModel(context: context))
-          self.isAdminAvailable = isAdminAvailable
-      }
+    @State private var searchText = ""
+    @State private var showDeleteAlert = false
+    @State private var trainerToDelete: TrainerEntity?
+
+    init(context: NSManagedObjectContext, isAdminAvailable: Bool) {
+        self._trainerVM = StateObject(wrappedValue: TrainerViewModel(context: context))
+        self.isAdminAvailable = isAdminAvailable
+    }
+
+    var filteredTrainers: [TrainerEntity] {
+        if searchText.isEmpty {
+            return trainerVM.trainers
+        } else {
+            return trainerVM.trainers.filter {
+                ($0.name ?? "").localizedCaseInsensitiveContains(searchText) ||
+                ($0.speciality ?? "").localizedCaseInsensitiveContains(searchText) ||
+                ($0.number ?? "").localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -33,9 +49,11 @@ struct TrainerView: View {
                             description: Text("Tap the Add Button To Add a Trainer!")
                         )
                         .foregroundStyle(Color.red)
+                        .transition(.opacity.combined(with: .scale))
+                        .animation(.easeInOut(duration: 0.4), value: trainerVM.trainers.isEmpty)
                     } else {
                         List {
-                            ForEach(trainerVM.trainers, id: \.id) { trainer in
+                            ForEach(filteredTrainers, id: \.id) { trainer in
                                 HStack {
                                     if let imagePath = trainer.profileImagePath,
                                        let image = trainerVM.loadImageFromFileManager(path: imagePath) {
@@ -53,22 +71,29 @@ struct TrainerView: View {
                                     VStack(alignment: .leading) {
                                         Text(trainer.name ?? "No Name")
                                             .font(.headline)
+                                            .foregroundStyle(Color.white)
                                         Text(trainer.speciality ?? "No Speciality")
                                             .font(.subheadline)
+                                            .foregroundStyle(Color.white)
                                         Text(trainer.number ?? "No Number")
                                             .font(.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.yellow)
+                                            .bold()
                                     }
                                 }
-                                .frame(height: 100)
-                                
                                 .id(trainer.id)
-                                .listRowBackground(Color.white.opacity(0.9))
+                                .listRowBackground(Color.black.opacity(0.6))
+                                .shadow(radius: 5)
                                 Divider()
                                     .frame(height: 10)
                                     .listRowBackground(Color.white.opacity(0.0))
                             }
-                            .onDelete(perform: trainerVM.deleteTrainer)
+                            .onDelete { indexSet in
+                                if let index = indexSet.first {
+                                    trainerToDelete = filteredTrainers[index]
+                                    showDeleteAlert = true
+                                }
+                            }
                         }
                         .scrollContentBackground(.hidden)
                     }
@@ -76,23 +101,36 @@ struct TrainerView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink("Add Trainer") {
-                 AddTrainerSheet(viewModel: trainerVM)
+                    NavigationLink("Trainer+") {
+                        AddTrainerSheet(viewModel: trainerVM)
                     }
                     .disabled(!isAdminAvailable)
                     .foregroundStyle(Color.white)
                     .frame(width: 100, height: 50)
-                    .background(Color.blue)
+                    .background(Color.gray.opacity(0.6))
                     .clipShape(.buttonBorder)
                 }
             }
-         
+            .onAppear {
+                trainerVM.fetchTrainers()
+            }
+            .navigationTitle("Trainers")
+            .searchable(text: $searchText, prompt: "Search by Name, Speciality, or Number")
+            .alert("Delete Trainer?", isPresented: $showDeleteAlert) {
+                Button("Yes", role: .destructive) {
+                    if let trainer = trainerToDelete {
+                        trainerVM.deleteTrainer(trainer: trainer)
+                    }
+                }
+                Button("No", role: .cancel) { }
+            } message: {
+                Text("Are you sure you want to delete this trainer?")
+            }
         }
-        .onAppear {
-                       trainerVM.fetchTrainers()
-                   }
     }
 }
+
+
 
 #Preview {
     TrainerView(context: PersistenceController.shared.container.viewContext, isAdminAvailable: false)
