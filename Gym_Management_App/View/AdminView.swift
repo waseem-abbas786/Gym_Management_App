@@ -20,9 +20,9 @@ struct AdminView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("admin")
+                Image("muscule")
                     .resizable()
-                    .opacity(0.8)
+                    .opacity(0.9)
                     .ignoresSafeArea()
                 VStack {
                     if adminVM.admins.isEmpty {
@@ -31,7 +31,8 @@ struct AdminView: View {
                             systemImage: "person.crop.circle.badge.xmark",
                             description: Text("Tap the Add Button To Add a Gym Owner!")
                         )
-                        .foregroundStyle(Color.red)
+                        .foregroundStyle(Color.white)
+                        .bold()
                     } else {
                         List {
                             ForEach(adminVM.admins, id:\.id) { admin in
@@ -58,34 +59,37 @@ struct AdminView: View {
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
-                                    
                                 }
                                 .id(admin.id)
                               }
             
                             .onDelete(perform: adminVM.deleteAdmins)
                         }
-                       
-                      
                         .scrollContentBackground(.hidden)
-                        
-                    }
+                     }
                 }
             }
-           
-            
-            
-            
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                      NavigationLink("Trainers🏋🏻‍♀️") {
-                          TrainerView(
-                                  context: viewContext,
-                                  isAdminAvailable: !adminVM.admins.isEmpty
-                              )
+              .toolbar {
+                if !adminVM.admins.isEmpty {
+                    ToolbarItem(placement: .topBarLeading) {
+                        NavigationLink("Members") {
+                            MemberView(context: viewContext)
+                        }
+                        .foregroundStyle(Color.white)
+                    }
+                }
+                if !adminVM.admins.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                          NavigationLink("Trainers🏋🏻‍♀️") {
+                              TrainerView(
+                                      context: viewContext,
+                                      isAdminAvailable: !adminVM.admins.isEmpty
+                                  )
+                          }
+                          .foregroundStyle(Color.white)
                       }
-                  }
-                ToolbarItem(placement: .topBarTrailing) {
+                }
+                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Log Out") {
                           do {
                           try viewModel.signOut()
@@ -94,20 +98,19 @@ struct AdminView: View {
                          print("Logout failed: \(error.localizedDescription)")
                                 }
                             }
-//                    .foregroundStyle(Color.white)
-//                    .frame(width: 100, height: 50)
-//                    .background(Color.blue)
-//                    .clipShape(.buttonBorder)
+                    .foregroundStyle(Color.white)
                 }
                 if adminVM.admins.isEmpty {
                     ToolbarItem(placement: .topBarLeading) {
                         NavigationLink("Manage Admin") {
                             AddAdminSheet(viewModel: adminVM)
                         }
+                        .foregroundStyle(Color.white)
                     }
                 }
             
             }
+            
         }
     }
 }
@@ -198,4 +201,5 @@ struct AddAdminSheet: View {
         }
     }
 }
+
 

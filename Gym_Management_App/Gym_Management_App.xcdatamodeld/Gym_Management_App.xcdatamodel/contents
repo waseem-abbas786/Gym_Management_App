@@ -8,10 +8,11 @@
         <attribute name="profileImagePath" optional="YES" attributeType="String"/>
     </entity>
     <entity name="MemberEntity" representedClassName="MemberEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="age" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="membershipType" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="phone" optional="YES" attributeType="String"/>
+        <attribute name="number" optional="YES" attributeType="String"/>
         <attribute name="profileImagePath" optional="YES" attributeType="String"/>
     </entity>
     <entity name="TrainerEntity" representedClassName="TrainerEntity" syncable="YES" codeGenerationType="class">

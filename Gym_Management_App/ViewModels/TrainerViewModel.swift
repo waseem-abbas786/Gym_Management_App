@@ -97,6 +97,9 @@ class TrainerViewModel : ObservableObject {
         selectedPhoto = nil
         profileImage = nil
     }
+    var isButtonvalid : Bool {
+        name.isEmpty || number.isEmpty
+    }
 
 }
 

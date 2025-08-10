@@ -22,6 +22,14 @@ struct PersistenceController {
         sampleTrainer.number = "030383"
         sampleTrainer.speciality = "Strength"
         sampleTrainer.profileImagePath = nil
+        
+        let sampleMember = MemberEntity(context: viewContext)
+        sampleMember.id = UUID()
+        sampleMember.name = "no Name"
+        sampleMember.membershipType = "simple"
+        sampleMember.number = "83458934"
+        sampleMember.age = "no age"
+        sampleMember.profileImagePath = nil
 
         do {
             try viewContext.save()

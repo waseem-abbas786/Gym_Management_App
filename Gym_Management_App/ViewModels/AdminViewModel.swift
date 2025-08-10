@@ -37,7 +37,6 @@ class AdminViewModel : ObservableObject, Identifiable {
         newAdmin.gymName = gymName
         newAdmin.gymAddress = gymAddress
         
-        // Save image and store path
         if let image = profileImage {
             let savedFileName = saveImageToFileManager(image: image)
             newAdmin.profileImagePath = savedFileName

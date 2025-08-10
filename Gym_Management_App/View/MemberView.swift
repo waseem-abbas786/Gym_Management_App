@@ -1,44 +1,45 @@
 //
-//  TrainerView.swift
+//  MemberView.swift
 //  Gym_Management_App
 //
-//  Created by Waseem Abbas on 09/08/2025.
-import CoreData
+//  Created by Waseem Abbas on 10/08/2025.
+//
+
+
+
 import SwiftUI
+import PhotosUI
 
-struct TrainerView: View {
+struct MemberView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @StateObject var trainerVM: TrainerViewModel
+    @StateObject var memberVM: MemberViewModel
 
-    let isAdminAvailable: Bool
-
-      init(context: NSManagedObjectContext, isAdminAvailable: Bool) {
-          self._trainerVM = StateObject(wrappedValue: TrainerViewModel(context: context))
-          self.isAdminAvailable = isAdminAvailable
-      }
+    init(context: NSManagedObjectContext) {
+        self._memberVM = StateObject(wrappedValue: MemberViewModel(context: context))
+    }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("admin")
+                Image("muscule")
                     .resizable()
                     .opacity(0.8)
                     .ignoresSafeArea()
 
                 VStack {
-                    if trainerVM.trainers.isEmpty {
+                    if memberVM.members.isEmpty {
                         ContentUnavailableView(
-                            "No Trainers Yet",
-                            systemImage: "person.crop.circle.badge.xmark",
-                            description: Text("Tap the Add Button To Add a Trainer!")
+                            "No Members Yet",
+                            systemImage: "person.3",
+                            description: Text("Tap the Add Button to Add a Member!")
                         )
-                        .foregroundStyle(Color.red)
+                        .foregroundStyle(Color.white)
                     } else {
                         List {
-                            ForEach(trainerVM.trainers, id: \.id) { trainer in
+                            ForEach(memberVM.members, id: \.id) { member in
                                 HStack {
-                                    if let imagePath = trainer.profileImagePath,
-                                       let image = trainerVM.loadImageFromFileManager(path: imagePath) {
+                                    if let imagePath = member.profileImagePath,
+                                       let image = memberVM.loadImageFromFileManager(path: imagePath) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()
@@ -51,24 +52,20 @@ struct TrainerView: View {
                                     }
 
                                     VStack(alignment: .leading) {
-                                        Text(trainer.name ?? "No Name")
+                                        Text(member.name ?? "No Name")
                                             .font(.headline)
-                                        Text(trainer.speciality ?? "No Speciality")
+                                        Text(member.age ?? "no age")
                                             .font(.subheadline)
-                                        Text(trainer.number ?? "No Number")
+                                        Text(member.membershipType ?? "No Membership Type")
+                                            .font(.subheadline)
+                                        Text(member.number ?? "No Number")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
                                 }
-                                .frame(height: 100)
-                                
-                                .id(trainer.id)
-                                .listRowBackground(Color.white.opacity(0.9))
-                                Divider()
-                                    .frame(height: 10)
-                                    .listRowBackground(Color.white.opacity(0.0))
+                                .id(member.id)
                             }
-                            .onDelete(perform: trainerVM.deleteTrainer)
+                            .onDelete(perform: memberVM.deleteMember)
                         }
                         .scrollContentBackground(.hidden)
                     }
@@ -76,44 +73,45 @@ struct TrainerView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink("Add Trainer") {
-                 AddTrainerSheet(viewModel: trainerVM)
+                    NavigationLink("Member+") {
+                        AddMemberSheet(viewModel: memberVM)
                     }
-                    .disabled(!isAdminAvailable)
                     .foregroundStyle(Color.white)
                     .frame(width: 100, height: 50)
-                    .background(Color.blue)
+                    .background(Color.gray.opacity(0.6))
                     .clipShape(.buttonBorder)
                 }
             }
-         
+            .onAppear {
+                memberVM.fetchMembers()
+            }
         }
-        .onAppear {
-                       trainerVM.fetchTrainers()
-                   }
     }
 }
 
 #Preview {
-    TrainerView(context: PersistenceController.shared.container.viewContext, isAdminAvailable: false)
-       
+    MemberView(context: PersistenceController.shared.container.viewContext)
 }
-// MARK: The sheet \ View for adding the trainer
+
+// MARK: The sheet \ View for adding the members
+
+
 import SwiftUI
 import PhotosUI
+import CoreData
 
-struct AddTrainerSheet: View {
-    @ObservedObject var viewModel: TrainerViewModel
+struct AddMemberSheet: View {
+    @ObservedObject var viewModel: MemberViewModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("admin")
+                Image("muscule")
                     .resizable()
                     .opacity(0.8)
                     .ignoresSafeArea()
-                
+
                 Form {
                     Section("Profile Photo") {
                         PhotosPicker(selection: $viewModel.selectedPhoto, matching: .images) {
@@ -145,34 +143,33 @@ struct AddTrainerSheet: View {
                         }
                     }
                     .listRowBackground(Color.white.opacity(0.9))
-                    
-                    Section("Trainer Details") {
+
+                    Section("Member Details") {
                         TextField("Name", text: $viewModel.name)
                         TextField("Phone Number", text: $viewModel.number)
-                        
-                        Picker("Speciality", selection: $viewModel.speciality) {
-                            ForEach(Speciality.allCases) { speciality in
-                                Text(speciality.rawValue).tag(speciality)
+                        TextField("Age", text: $viewModel.age)
+
+                        Picker("Membership Type", selection: $viewModel.membershipType) {
+                            ForEach(MembershipType.allCases) { type in
+                                Text(type.rawValue).tag(type)
                             }
                         }
-                        .pickerStyle(.segmented)
+                        .pickerStyle(.segmented) 
                     }
                     .listRowBackground(Color.white.opacity(0.9))
                 }
                 .scrollContentBackground(.hidden)
-                .background(Color.clear)
             }
-            .navigationTitle("Add Trainer")
+            .navigationTitle("Add Member")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        viewModel.addTrainer()
+                        viewModel.addMember()
                         dismiss()
-                        viewModel.resetForm()
                     }
-                    .disabled(viewModel.isButtonvalid)
+                    .disabled(viewModel.isSaveButtonDisabled)
                     .foregroundStyle(viewModel.isButtonvalid ? Color.red : Color.white)
-                    .animation(.easeInOut(duration: 2.0), value: viewModel.isButtonvalid)
+                    .animation(.easeInOut(duration: 2.0), value: viewModel.isSaveButtonDisabled)
                     .frame(width: 100, height: 50)
                     .background(Color.white.opacity(0.8))
                     .clipShape(.buttonBorder)
