@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import PhotosUI
+import CoreData
 
 struct MemberView: View {
     @State var searchText = ""
@@ -14,6 +15,8 @@ struct MemberView: View {
     
     @State private var showDeleteAlert = false
     @State private var memberToDelete: MemberEntity?
+    @State private var memberToEdit: MemberEntity? = nil
+
 
     init(context: NSManagedObjectContext) {
         self._memberVM = StateObject(wrappedValue: MemberViewModel(context: context))
@@ -36,8 +39,8 @@ struct MemberView: View {
             ZStack {
                 Image("muscule")
                     .resizable()
-                    .opacity(0.8)
-                    .ignoresSafeArea()
+                    .ignoresSafeArea(edges: .bottom)
+                    .opacity(0.9)
 
                 VStack {
                     if memberVM.members.isEmpty {
@@ -82,22 +85,28 @@ struct MemberView: View {
                                             .foregroundColor(.yellow)
                                             .bold()
                                     }
+                                    .bold()
                                 }
                                 .frame(height: 100)
                                 .id(member.id)
-                                .listRowBackground(Color.black.opacity(0.5))
+                                .listRowBackground(Color.black.opacity(0))
                                 .shadow(radius: 5)
+                                .onTapGesture (count: 2) {
+                                            memberToEdit = member
+                                        }
                                 Divider()
                                     .frame(height: 10)
                                     .listRowBackground(Color.white.opacity(0.0))
                             }
                             .onDelete { indexSet in
                                 if let index = indexSet.first {
-                                    // Find the corresponding member from filteredMembers
                                     memberToDelete = filteredMembers[index]
                                     showDeleteAlert = true
                                 }
                             }
+                        }
+                        .sheet(item: $memberToEdit) { member in
+                            EditMemberSheet(viewModel: memberVM, member: member)
                         }
                         .scrollContentBackground(.hidden)
                         .transition(.slide)
@@ -110,10 +119,8 @@ struct MemberView: View {
                     NavigationLink("Member+") {
                         AddMemberSheet(viewModel: memberVM)
                     }
-                    .foregroundStyle(Color.white)
-                    .frame(width: 100, height: 50)
-                    .background(Color.gray.opacity(0.6))
-                    .clipShape(.buttonBorder)
+                    .foregroundStyle(Color.yellow)
+                   
                 }
             }
             .onAppear {
@@ -145,10 +152,6 @@ struct MemberView: View {
 
 // MARK: The sheet \ View for adding the members
 
-
-import SwiftUI
-import PhotosUI
-import CoreData
 
 struct AddMemberSheet: View {
     @ObservedObject var viewModel: MemberViewModel
@@ -218,14 +221,99 @@ struct AddMemberSheet: View {
                         dismiss()
                     }
                     .disabled(viewModel.isSaveButtonDisabled)
-//                    .foregroundStyle(viewModel.isButtonvalid ? Color.red : Color.white)
-                    .animation(.easeInOut(duration: 2.0), value: viewModel.isSaveButtonDisabled)
-                    .frame(width: 100, height: 50)
-                    .background(Color.white.opacity(0.8))
-                    .clipShape(.buttonBorder)
+                    .bold()
+                    .foregroundStyle(viewModel.isSaveButtonDisabled ? Color.red : Color.yellow)
+                    .strikethrough(viewModel.isSaveButtonDisabled ? true : false, pattern: .solid)
+                    .animation(.easeInOut(duration: 1.0), value: viewModel.isSaveButtonDisabled)
                 }
             }
         }
     }
 }
 
+// MARK: The sheet \ View for editing the members
+struct EditMemberSheet: View {
+    @ObservedObject var viewModel: MemberViewModel
+    @State var member: MemberEntity
+    @Environment(\.dismiss) var dismiss
+
+    @State private var name: String = ""
+    @State private var age: String = ""
+    @State private var membershipType: String = ""
+    @State private var number: String = ""
+    @State private var selectedImage: UIImage? = nil
+    @State private var photoItem: PhotosPickerItem?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section(header: Text("Personal Info")) {
+                    TextField("Name", text: $name)
+                    TextField("Age", text: $age)
+                        .keyboardType(.numberPad)
+                    TextField("Membership Type", text: $membershipType)
+                    TextField("Number", text: $number)
+                        .keyboardType(.phonePad)
+                }
+
+                Section(header: Text("Profile Image")) {
+                    PhotosPicker(selection: $photoItem, matching: .images, photoLibrary: .shared()) {
+                        if let selectedImage {
+                            Image(uiImage: selectedImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 150)
+                                .clipShape(Circle())
+                                .padding()
+                        } else {
+                            Text("Select Image")
+                        }
+                    }
+                    .onChange(of: photoItem) {_ , newItem in
+                        Task {
+                            if let data = try? await newItem?.loadTransferable(type: Data.self),
+                               let uiImage = UIImage(data: data) {
+                                selectedImage = uiImage
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Edit Member")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        member.name = name
+                        member.age = age
+                        member.membershipType = membershipType
+                        member.number = number
+
+                        if let image = selectedImage {
+                            if let path = viewModel.saveImageToFileManager(image: image) {
+                                member.profileImagePath = path
+                            }
+                        }
+
+                        viewModel.saveContext()
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                name = member.name ?? ""
+                age = member.age ?? ""
+                membershipType = member.membershipType ?? ""
+                number = member.number ?? ""
+                if let path = member.profileImagePath,
+                   let image = viewModel.loadImageFromFileManager(path: path) {
+                    selectedImage = image
+                }
+            }
+        }
+    }
+}

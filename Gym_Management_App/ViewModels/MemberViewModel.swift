@@ -74,8 +74,16 @@ class MemberViewModel : ObservableObject {
         profileImage = nil
         selectedPhoto = nil
     }
+    func saveContext() {
+        do {
+            try context.save()
+            fetchMembers() 
+        } catch {
+            print("Error saving context: \(error.localizedDescription)")
+        }
+    }
 
-    private func saveImageToFileManager(image: UIImage) -> String? {
+        func saveImageToFileManager(image: UIImage) -> String? {
         guard let data = image.jpegData(compressionQuality: 0.8) else { return nil }
         let filename = UUID().uuidString + ".jpg"
         let url = getDocumentsDirectory().appendingPathComponent(filename)

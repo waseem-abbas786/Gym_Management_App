@@ -20,7 +20,7 @@ class AdminViewModel : ObservableObject, Identifiable {
         self.context = context
         fetchAdmins()
     }
-//    MARK: fetch data from Coredata
+
     func fetchAdmins () {
         let request : NSFetchRequest<AdminEntity> = AdminEntity.fetchRequest()
         do {
@@ -29,7 +29,7 @@ class AdminViewModel : ObservableObject, Identifiable {
             print("Error Fetching admins : \(error)")
         }
     }
-//    MARK: func to add a new admin
+    
     func addAdmin() {
         let newAdmin = AdminEntity(context: context)
         newAdmin.id = UUID()
@@ -51,8 +51,8 @@ class AdminViewModel : ObservableObject, Identifiable {
         }
     }
 
-//    MARK: save Image to filemanager
-    private func saveImageToFileManager(image: UIImage) -> String {
+
+     func saveImageToFileManager(image: UIImage) -> String {
         let filename = UUID().uuidString + ".jpg"
         let url = getDocumentsDirectory().appendingPathComponent(filename)
         
@@ -63,7 +63,7 @@ class AdminViewModel : ObservableObject, Identifiable {
         return filename
     }
     
-    // MARK: - Load Image from FileManager
+    
     func loadImageFromFileManager(path: String) -> UIImage? {
         let url = getDocumentsDirectory().appendingPathComponent(path)
         if let data = try? Data(contentsOf: url) {
@@ -72,7 +72,7 @@ class AdminViewModel : ObservableObject, Identifiable {
         return nil
     }
     
-    // MARK: - Get Documents Directory
+    
     private func getDocumentsDirectory() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
@@ -84,21 +84,34 @@ class AdminViewModel : ObservableObject, Identifiable {
         selectedPhoto = nil
         profileImage = nil
     }
-    func deleteAdmins(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let admin = admins[index]
-            context.delete(admin)
-        }
-        do {
-            try context.save()
-            fetchAdmins()
-        } catch {
-            print("Failed to delete admin: \(error.localizedDescription)")
-        }
-    }
+//    MARK: The user should only edit the admin no delete bcz if admin is deleted then why  we keep the data of memberes and trainers
+//    func deleteAdmins(at offsets: IndexSet) {
+//        offsets.forEach { index in
+//            let admin = admins[index]
+//            context.delete(admin)
+//        }
+//        do {
+//            try context.save()
+//            fetchAdmins()
+//        } catch {
+//            print("Failed to delete admin: \(error.localizedDescription)")
+//        }
+//    }
     var isSaveButtonDisabled: Bool {
           name.isEmpty || gymName.isEmpty || gymAddress.isEmpty || password.isEmpty
       }
 
-   
+    func saveContext() {
+        if context.hasChanges {
+            do {
+                try context.save()
+                fetchAdmins() // Refresh list after saving
+                print("Context saved successfully.")
+            } catch {
+                let nsError = error as NSError
+                print("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+
 }

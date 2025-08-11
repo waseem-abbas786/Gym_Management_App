@@ -51,7 +51,7 @@ class TrainerViewModel : ObservableObject {
             print("Error saving Admin: \(error.localizedDescription)")
         }
     }
-    private func saveImageToFilemanager(image: UIImage) -> String? {
+    func saveImageToFilemanager(image: UIImage) -> String? {
         let filename = UUID().uuidString + ".jpg"
         let url = getDocumentsDirectory().appendingPathComponent(filename)
         if let data = image.jpegData(compressionQuality: 0.8) {
@@ -87,6 +87,14 @@ class TrainerViewModel : ObservableObject {
         }
     }
 
+    func saveContext() {
+        do {
+            try context.save()
+            fetchTrainers()
+        } catch {
+            print("Failed to save trainer: \(error.localizedDescription)")
+        }
+    }
 
     func resetForm() {
         name = ""

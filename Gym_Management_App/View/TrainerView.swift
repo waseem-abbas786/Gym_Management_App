@@ -5,20 +5,18 @@
 //  Created by Waseem Abbas on 09/08/2025.
 import CoreData
 import SwiftUI
-
+import PhotosUI
 struct TrainerView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject var trainerVM: TrainerViewModel
 
-    let isAdminAvailable: Bool
-
     @State private var searchText = ""
     @State private var showDeleteAlert = false
     @State private var trainerToDelete: TrainerEntity?
+    @State private var trainerToEdit: TrainerEntity?  // single optional state for edit
 
-    init(context: NSManagedObjectContext, isAdminAvailable: Bool) {
+    init(context: NSManagedObjectContext) {
         self._trainerVM = StateObject(wrappedValue: TrainerViewModel(context: context))
-        self.isAdminAvailable = isAdminAvailable
     }
 
     var filteredTrainers: [TrainerEntity] {
@@ -38,8 +36,8 @@ struct TrainerView: View {
             ZStack {
                 Image("admin")
                     .resizable()
-                    .opacity(0.8)
-                    .ignoresSafeArea()
+                    .opacity(0.9)
+                    .ignoresSafeArea(edges: .bottom)
 
                 VStack {
                     if trainerVM.trainers.isEmpty {
@@ -80,10 +78,13 @@ struct TrainerView: View {
                                             .foregroundColor(.yellow)
                                             .bold()
                                     }
+                                    .bold()
                                 }
                                 .id(trainer.id)
-                                .listRowBackground(Color.black.opacity(0.6))
-                                .shadow(radius: 5)
+                                .listRowBackground(Color.black.opacity(0.0))
+                                .onTapGesture {
+                                    trainerToEdit = trainer
+                                }
                                 Divider()
                                     .frame(height: 10)
                                     .listRowBackground(Color.white.opacity(0.0))
@@ -96,6 +97,9 @@ struct TrainerView: View {
                             }
                         }
                         .scrollContentBackground(.hidden)
+                        .sheet(item: $trainerToEdit) { trainer in
+                            EditTrainerSheet(viewModel: trainerVM, trainer: trainer)
+                        }
                     }
                 }
             }
@@ -104,11 +108,7 @@ struct TrainerView: View {
                     NavigationLink("Trainer+") {
                         AddTrainerSheet(viewModel: trainerVM)
                     }
-                    .disabled(!isAdminAvailable)
-                    .foregroundStyle(Color.white)
-                    .frame(width: 100, height: 50)
-                    .background(Color.gray.opacity(0.6))
-                    .clipShape(.buttonBorder)
+                    .foregroundStyle(Color.yellow)
                 }
             }
             .onAppear {
@@ -132,13 +132,12 @@ struct TrainerView: View {
 
 
 
+
 #Preview {
-    TrainerView(context: PersistenceController.shared.container.viewContext, isAdminAvailable: false)
+    TrainerView(context: PersistenceController.shared.container.viewContext)
        
 }
 // MARK: The sheet \ View for adding the trainer
-import SwiftUI
-import PhotosUI
 
 struct AddTrainerSheet: View {
     @ObservedObject var viewModel: TrainerViewModel
@@ -209,11 +208,94 @@ struct AddTrainerSheet: View {
                         viewModel.resetForm()
                     }
                     .disabled(viewModel.isButtonvalid)
-                    .foregroundStyle(viewModel.isButtonvalid ? Color.red : Color.white)
-                    .animation(.easeInOut(duration: 2.0), value: viewModel.isButtonvalid)
-                    .frame(width: 100, height: 50)
-                    .background(Color.white.opacity(0.8))
-                    .clipShape(.buttonBorder)
+                    .bold()
+                    .foregroundStyle(viewModel.isButtonvalid ? Color.red : Color.yellow)
+                    .strikethrough(viewModel.isButtonvalid ? true : false, pattern: .solid)
+                    .animation(.easeInOut(duration: 1.0), value: viewModel.isButtonvalid)
+                    
+                }
+            }
+        }
+    }
+}
+
+
+
+struct EditTrainerSheet: View {
+    @ObservedObject var viewModel: TrainerViewModel
+    @State var trainer: TrainerEntity
+    @Environment(\.dismiss) var dismiss
+
+    @State private var name: String = ""
+    @State private var speciality: String = ""
+    @State private var number: String = ""
+    @State private var selectedImage: UIImage? = nil
+    @State private var photoItem: PhotosPickerItem?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section(header: Text("Trainer Info")) {
+                    TextField("Name", text: $name)
+                    TextField("Speciality", text: $speciality)
+                    TextField("Number", text: $number)
+                        .keyboardType(.phonePad)
+                }
+
+                Section(header: Text("Profile Image")) {
+                    PhotosPicker(selection: $photoItem, matching: .images, photoLibrary: .shared()) {
+                        if let selectedImage {
+                            Image(uiImage: selectedImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 150)
+                                .clipShape(Circle())
+                                .padding()
+                        } else {
+                            Text("Select Image")
+                        }
+                    }
+                    .onChange(of: photoItem) {_, newItem in
+                        Task {
+                            if let data = try? await newItem?.loadTransferable(type: Data.self),
+                               let uiImage = UIImage(data: data) {
+                                selectedImage = uiImage
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Edit Trainer")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        trainer.name = name
+                        trainer.speciality = speciality
+                        trainer.number = number
+
+                        if let selectedImage {
+                            if let path = viewModel.saveImageToFilemanager(image: selectedImage) {
+                                trainer.profileImagePath = path
+                            }
+                        }
+
+                        viewModel.saveContext()
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                name = trainer.name ?? ""
+                speciality = trainer.speciality ?? ""
+                number = trainer.number ?? ""
+                if let path = trainer.profileImagePath,
+                   let image = viewModel.loadImageFromFileManager(path: path) {
+                    selectedImage = image
                 }
             }
         }

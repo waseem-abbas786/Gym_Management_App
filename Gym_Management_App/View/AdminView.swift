@@ -5,6 +5,7 @@
 //  Created by Waseem Abbas on 07/08/2025.
 //
 import SwiftUI
+import PhotosUI
 import CoreData
 
 struct AdminView: View {
@@ -14,6 +15,8 @@ struct AdminView: View {
     @StateObject private var adminVM: AdminViewModel
     @StateObject private var memberVM: MemberViewModel
     @StateObject private var trainerVM: TrainerViewModel
+    
+    @State private var adminToEdit: AdminEntity? // Only one state to handle edit
 
     init(isLoggedIn: Binding<Bool>, context: NSManagedObjectContext) {
         self._isLoggedIn = isLoggedIn
@@ -32,8 +35,6 @@ struct AdminView: View {
         ("Strong is the new sexy.", "bg7"),
         ("Make yourself stronger than your excuses.", "bg8")
     ]
-
-    @State private var currentIndex = 0
 
     var body: some View {
         NavigationStack {
@@ -76,31 +77,32 @@ struct AdminView: View {
                                             .foregroundColor(.white)
                                         Text(admin.gymName ?? "No Gym Name")
                                             .font(.subheadline)
-                                            .foregroundColor(.white.opacity(0.8))
+                                            .foregroundColor(.white.opacity(0.9))
                                         Text(admin.gymAddress ?? "No Address")
                                             .font(.caption)
-                                            .foregroundColor(.white.opacity(0.6))
+                                            .foregroundColor(.yellow)
                                     }
+                                    .bold()
                                 }
                                 .padding()
                                 .background(Color.black.opacity(0.3))
                                 .clipShape(RoundedRectangle(cornerRadius: 15))
                                 .listRowBackground(Color.clear)
+                                .onTapGesture(count: 2) { // Double tap to edit
+                                    adminToEdit = admin
+                                }
                             }
-                            .onDelete(perform: adminVM.deleteAdmins)
                             
                             HStack(spacing: 16) {
-                                statCard(title: "Total Members",
-                                         count: memberVM.members.count)
-                                statCard(title: "Total Trainers",
-                                         count: trainerVM.trainers.count)
+                                statCard(title: "Total Members", count: memberVM.members.count)
+                                statCard(title: "Total Trainers", count: trainerVM.trainers.count)
                             }
                             .listRowBackground(Color.clear)
+
                             Section {
                                 GymQuoteSlider(slides: gymSlides)
                                     .listRowBackground(Color.clear)
                             }
-                 
                         }
                         .scrollContentBackground(.hidden)
                     }
@@ -121,10 +123,7 @@ struct AdminView: View {
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         NavigationLink("Trainers🏋🏻‍♀️") {
-                            TrainerView(
-                                context: viewContext,
-                                isAdminAvailable: !adminVM.admins.isEmpty
-                            )
+                            TrainerView(context: viewContext)
                         }
                         .foregroundStyle(Color.white)
                     }
@@ -149,6 +148,10 @@ struct AdminView: View {
                     }
                 }
             }
+            // Edit sheet using just `adminToEdit`
+            .sheet(item: $adminToEdit) { admin in
+                EditAdminSheet(viewModel: adminVM, admin: admin)
+            }
         }
     }
 
@@ -170,6 +173,7 @@ struct AdminView: View {
     }
 }
 
+
 #Preview {
     AdminView(
         isLoggedIn: .constant(false),
@@ -177,8 +181,8 @@ struct AdminView: View {
     )
 }
 
-import SwiftUI
-import PhotosUI
+
+
 
 struct AddAdminSheet: View {
     @ObservedObject var viewModel: AdminViewModel
@@ -245,11 +249,9 @@ struct AddAdminSheet: View {
                         viewModel.resetForm()
                     }
                     .disabled(viewModel.isSaveButtonDisabled)
-                    .foregroundStyle(viewModel.isSaveButtonDisabled ? Color.red : Color.white)
+                    .foregroundStyle(viewModel.isSaveButtonDisabled ? Color.red : Color.yellow)
                     .animation(.easeInOut(duration: 2.0), value: viewModel.isSaveButtonDisabled)
-                    .frame(width: 100, height: 50)
-                    .background(Color.white.opacity(0.8))
-                    .clipShape(.buttonBorder)
+                    
                     
                 }
             }
@@ -257,8 +259,8 @@ struct AddAdminSheet: View {
     }
 }
 
-import SwiftUI
 
+//MARK: the slide view
 struct GymQuoteSlider: View {
     let slides: [(quote: String, image: String)]
     @State private var currentIndex = 0
@@ -278,7 +280,7 @@ struct GymQuoteSlider: View {
                 .cornerRadius(22)
             Text(slides[currentIndex].quote)
                 .font(.headline)
-                .foregroundColor(.white)
+                .foregroundColor(.yellow)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
                 .transition(.opacity)
@@ -308,4 +310,84 @@ struct GymQuoteSlider: View {
         timer = nil
     }
 }
+//MARK: the edit  view
+struct EditAdminSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var viewModel: AdminViewModel
+    var admin: AdminEntity
 
+    @State private var name: String
+    @State private var gymName: String
+    @State private var gymAddress: String
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var profileImage: UIImage?
+
+    init(viewModel: AdminViewModel, admin: AdminEntity) {
+        self.viewModel = viewModel
+        self.admin = admin
+        _name = State(initialValue: admin.name ?? "")
+        _gymName = State(initialValue: admin.gymName ?? "")
+        _gymAddress = State(initialValue: admin.gymAddress ?? "")
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Admin Details") {
+                    TextField("Name", text: $name)
+                    TextField("Gym Name", text: $gymName)
+                    TextField("Gym Address", text: $gymAddress)
+                }
+
+                Section("Profile Image") {
+                    PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                        Text("Select Image")
+                    }
+                    if let profileImage {
+                        Image(uiImage: profileImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                    } else if let path = admin.profileImagePath,
+                              let image = viewModel.loadImageFromFileManager(path: path) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                    }
+                }
+            }
+            .navigationTitle("Edit Admin")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        admin.name = name
+                        admin.gymName = gymName
+                        admin.gymAddress = gymAddress
+
+                        if let image = profileImage {
+                            let savedPath = viewModel.saveImageToFileManager(image: image)
+                            admin.profileImagePath = savedPath
+                        }
+
+                        viewModel.saveContext()
+                        dismiss()
+                    }
+                }
+            }
+            .onChange(of: selectedPhoto) { _, newValue in
+                Task {
+                    if let newValue, let data = try? await newValue.loadTransferable(type: Data.self),
+                       let uiImage = UIImage(data: data) {
+                        profileImage = uiImage
+                    }
+                }
+            }
+        }
+    }
+}
