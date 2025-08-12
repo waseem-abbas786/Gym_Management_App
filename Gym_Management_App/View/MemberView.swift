@@ -99,7 +99,6 @@ struct MemberView: View {
                                             .frame(width: 70, height: 70)
                                     }
                                     
-                                    // Member details
                                     VStack(alignment: .leading) {
                                         Text(member.name ?? "No Name")
                                             .font(.headline)
@@ -123,7 +122,6 @@ struct MemberView: View {
                                     
                                     Spacer()
                                     
-                                    // Edit button (only opens when icon tapped)
                                     Button {
                                         memberToEdit = member
                                     } label: {

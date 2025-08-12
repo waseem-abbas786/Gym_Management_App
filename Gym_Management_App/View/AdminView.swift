@@ -98,9 +98,6 @@ struct AdminView: View {
                                 .background(Color.black.opacity(0.3))
                                 .clipShape(RoundedRectangle(cornerRadius: 15))
                                 .listRowBackground(Color.clear)
-                                .onTapGesture(count: 2) { // Double tap to edit
-                                   
-                                }
                             }
                             
                             HStack(spacing: 16) {
@@ -158,7 +155,6 @@ struct AdminView: View {
                     }
                 }
             }
-            // Edit sheet using just `adminToEdit`
             .sheet(item: $adminToEdit) { admin in
                 EditAdminSheet(viewModel: adminVM, admin: admin)
             }
