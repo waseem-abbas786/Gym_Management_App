@@ -10,6 +10,7 @@
     <entity name="MemberEntity" representedClassName="MemberEntity" syncable="YES" codeGenerationType="class">
         <attribute name="age" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isPaid" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="membershipType" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="number" optional="YES" attributeType="String"/>

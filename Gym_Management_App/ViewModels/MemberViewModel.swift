@@ -20,6 +20,7 @@ class MemberViewModel : ObservableObject {
     @Published var membershipType : MembershipType = .basic
     @Published var selectedPhoto: PhotosPickerItem?
     @Published var profileImage: UIImage?
+    @Published var isPaid : Bool = false
     
     private let context : NSManagedObjectContext
     init (context : NSManagedObjectContext) {
@@ -42,6 +43,7 @@ class MemberViewModel : ObservableObject {
         newMember.number = number
         newMember.age = age
         newMember.membershipType = membershipType.rawValue
+        newMember.isPaid = isPaid
 
         if let image = profileImage {
             let savedFileName = saveImageToFileManager(image: image)
@@ -82,6 +84,11 @@ class MemberViewModel : ObservableObject {
             print("Error saving context: \(error.localizedDescription)")
         }
     }
+    func togglePaymentStatus(member: MemberEntity) {
+        member.isPaid.toggle()
+        saveContext()
+    }
+
 
         func saveImageToFileManager(image: UIImage) -> String? {
         guard let data = image.jpegData(compressionQuality: 0.8) else { return nil }
@@ -108,6 +115,27 @@ class MemberViewModel : ObservableObject {
     var isSaveButtonDisabled: Bool {
         name.isEmpty || number.isEmpty
     }
+//    MARK: THe rest func when the month change the payement status automatically chnage to Unpaid for all
+    func resetPaymentStatusIfNeeded( ) {
+        let calendar = Calendar.current
+        let currentMonth = calendar.component(.month, from: Date())
+        let lastResetMonth = UserDefaults.standard.integer(forKey: "lastPaymentResetMonth")
+        
+        if currentMonth != lastResetMonth {
+            let fetchRequest: NSFetchRequest<MemberEntity> = MemberEntity.fetchRequest()
+            do {
+                let members = try context.fetch(fetchRequest)
+                for member in members {
+                    member.isPaid = false
+                }
+                try context.save()
+                UserDefaults.standard.set(currentMonth, forKey: "lastPaymentResetMonth")
+            } catch {
+                print("Error resetting payment status: \(error)")
+            }
+        }
+    }
+
 }
 
 

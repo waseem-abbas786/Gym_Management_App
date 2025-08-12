@@ -4,9 +4,16 @@
 //
 //  Created by Waseem Abbas on 10/08/2025.
 //
+
 import SwiftUI
 import PhotosUI
 import CoreData
+
+enum PaymentFilter: String, CaseIterable {
+    case all = "All"
+    case paid = "Paid"
+    case unpaid = "Unpaid"
+}
 
 struct MemberView: View {
     @State var searchText = ""
@@ -16,33 +23,55 @@ struct MemberView: View {
     @State private var showDeleteAlert = false
     @State private var memberToDelete: MemberEntity?
     @State private var memberToEdit: MemberEntity? = nil
-
-
+    @State private var memberToToggle: MemberEntity? = nil 
+    @State private var filter: PaymentFilter = .all
+    @State private var showConfirmation: Bool = false
+    
     init(context: NSManagedObjectContext) {
         self._memberVM = StateObject(wrappedValue: MemberViewModel(context: context))
     }
     
     var filteredMembers: [MemberEntity] {
+        let baseList: [MemberEntity]
+        
         if searchText.isEmpty {
-            return memberVM.members
+            baseList = memberVM.members
         } else {
-            return memberVM.members.filter {
+            baseList = memberVM.members.filter {
                 ($0.name ?? "").localizedCaseInsensitiveContains(searchText) ||
                 ($0.membershipType ?? "").localizedCaseInsensitiveContains(searchText) ||
                 ($0.age ?? "").localizedCaseInsensitiveContains(searchText)
             }
         }
+        
+        switch filter {
+        case .all:
+            return baseList
+        case .paid:
+            return baseList.filter { $0.isPaid }
+        case .unpaid:
+            return baseList.filter { !$0.isPaid }
+        }
     }
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
                 Image("muscule")
                     .resizable()
+                    .padding(.top, 34)
                     .ignoresSafeArea(edges: .bottom)
                     .opacity(0.9)
-
+                
                 VStack {
+                    Picker("Filter", selection: $filter) {
+                        ForEach(PaymentFilter.allCases, id: \.self) { option in
+                            Text(option.rawValue).tag(option)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    
                     if memberVM.members.isEmpty {
                         ContentUnavailableView(
                             "No Members Yet",
@@ -56,6 +85,7 @@ struct MemberView: View {
                         List {
                             ForEach(filteredMembers, id: \.id) { member in
                                 HStack {
+                                    // Profile image
                                     if let imagePath = member.profileImagePath,
                                        let image = memberVM.loadImageFromFileManager(path: imagePath) {
                                         Image(uiImage: image)
@@ -68,12 +98,13 @@ struct MemberView: View {
                                             .fill(Color.gray.opacity(0.3))
                                             .frame(width: 70, height: 70)
                                     }
-
+                                    
+                                    // Member details
                                     VStack(alignment: .leading) {
                                         Text(member.name ?? "No Name")
                                             .font(.headline)
                                             .foregroundStyle(Color.white)
-                                        Text(member.age ?? "no age")
+                                        Text(member.age ?? "No Age")
                                             .font(.subheadline)
                                             .foregroundStyle(Color.yellow)
                                             .bold()
@@ -84,19 +115,41 @@ struct MemberView: View {
                                             .font(.caption)
                                             .foregroundColor(.yellow)
                                             .bold()
+                                        Text(member.isPaid ? "Paid" : "Unpaid")
+                                            .font(.caption)
+                                            .foregroundColor(member.isPaid ? .green : .red)
                                     }
                                     .bold()
+                                    
+                                    Spacer()
+                                    
+                                    // Edit button (only opens when icon tapped)
+                                    Button {
+                                        memberToEdit = member
+                                    } label: {
+                                        Image(systemName: "pencil")
+                                            .foregroundColor(.yellow)
+                                            .padding(8)
+                                            .background(Circle().fill(Color.black.opacity(0.3)))
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                                 .frame(height: 100)
-                                .id(member.id)
                                 .listRowBackground(Color.black.opacity(0))
                                 .shadow(radius: 5)
-                                .onTapGesture (count: 2) {
-                                            memberToEdit = member
-                                        }
+                                .contentShape(Rectangle())
+                                .onTapGesture(count: 2) {
+                                    if member.isPaid {
+                                        memberToToggle = member
+                                        showConfirmation = true
+                                    } else {
+                                        memberVM.togglePaymentStatus(member: member)
+                                    }
+                                }
+                                
                                 Divider()
                                     .frame(height: 10)
-                                    .listRowBackground(Color.white.opacity(0.0))
+                                    .listRowBackground(Color.clear)
                             }
                             .onDelete { indexSet in
                                 if let index = indexSet.first {
@@ -120,14 +173,27 @@ struct MemberView: View {
                         AddMemberSheet(viewModel: memberVM)
                     }
                     .foregroundStyle(Color.yellow)
-                   
                 }
             }
             .onAppear {
                 memberVM.fetchMembers()
+                memberVM.resetPaymentStatusIfNeeded()
             }
             .navigationTitle("Members")
             .searchable(text: $searchText, placement: .automatic, prompt: "Search by Name, Age, or Type")
+            .alert("Are you sure?", isPresented: $showConfirmation) {
+                Button("Yes", role: .destructive) {
+                    if let member = memberToToggle {
+                        memberVM.togglePaymentStatus(member: member)
+                    }
+                    memberToToggle = nil
+                }
+                Button("No", role: .cancel) {
+                    memberToToggle = nil
+                }
+            } message: {
+                Text("Do you really want to mark this member as unpaid?")
+            }
             .alert("Delete Member?", isPresented: $showDeleteAlert) {
                 Button("Yes", role: .destructive) {
                     if let member = memberToDelete {
@@ -144,6 +210,7 @@ struct MemberView: View {
         }
     }
 }
+
 
 
 #Preview {

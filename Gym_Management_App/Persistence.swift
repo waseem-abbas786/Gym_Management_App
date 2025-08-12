@@ -30,6 +30,7 @@ struct PersistenceController {
         sampleMember.number = "83458934"
        sampleMember.age = "no age"
         sampleMember.profileImagePath = nil
+        sampleMember.isPaid = false
 
         do {
             try viewContext.save()

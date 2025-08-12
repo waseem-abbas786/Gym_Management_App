@@ -34,9 +34,9 @@ struct TrainerView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("admin")
+                Image("muscule")
                     .resizable()
-                    .opacity(0.9)
+                    .opacity(0.8)
                     .ignoresSafeArea(edges: .bottom)
 
                 VStack {
@@ -79,11 +79,21 @@ struct TrainerView: View {
                                             .bold()
                                     }
                                     .bold()
+                                    Spacer()
+                                    Button {
+                                        trainerToEdit = trainer
+                                            } label: {
+                                        Image(systemName: "pencil")
+                                           .foregroundColor(.yellow)
+                                           .padding(8)
+                                            .background(Circle().fill(Color.black.opacity(0.6)))
+                                            }
+                                            .buttonStyle(.plain)
                                 }
                                 .id(trainer.id)
                                 .listRowBackground(Color.black.opacity(0.0))
                                 .onTapGesture {
-                                    trainerToEdit = trainer
+                                
                                 }
                                 Divider()
                                     .frame(height: 10)

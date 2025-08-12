@@ -83,13 +83,23 @@ struct AdminView: View {
                                             .foregroundColor(.yellow)
                                     }
                                     .bold()
+                                    Spacer()
+                                    Button {
+                                     adminToEdit = admin
+                                        } label: {
+                                      Image(systemName: "pencil")
+                                       .foregroundColor(.yellow)
+                                     .padding(8)
+                                     .background(Circle().fill(Color.black.opacity(0.3)))
+                                            }
+                                        .buttonStyle(.plain)
                                 }
                                 .padding()
                                 .background(Color.black.opacity(0.3))
                                 .clipShape(RoundedRectangle(cornerRadius: 15))
                                 .listRowBackground(Color.clear)
                                 .onTapGesture(count: 2) { // Double tap to edit
-                                    adminToEdit = admin
+                                   
                                 }
                             }
                             
