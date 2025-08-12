@@ -6,6 +6,7 @@
 import CoreData
 import SwiftUI
 import PhotosUI
+
 struct TrainerView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject var trainerVM: TrainerViewModel
@@ -13,7 +14,7 @@ struct TrainerView: View {
     @State private var searchText = ""
     @State private var showDeleteAlert = false
     @State private var trainerToDelete: TrainerEntity?
-    @State private var trainerToEdit: TrainerEntity?  // single optional state for edit
+    @State private var trainerToEdit: TrainerEntity?
 
     init(context: NSManagedObjectContext) {
         self._trainerVM = StateObject(wrappedValue: TrainerViewModel(context: context))
@@ -36,7 +37,7 @@ struct TrainerView: View {
             ZStack {
                 Image("muscule")
                     .resizable()
-                    .opacity(0.8)
+                    .opacity(0.9)
                     .ignoresSafeArea(edges: .bottom)
 
                 VStack {
@@ -50,63 +51,71 @@ struct TrainerView: View {
                         .transition(.opacity.combined(with: .scale))
                         .animation(.easeInOut(duration: 0.4), value: trainerVM.trainers.isEmpty)
                     } else {
-                        List {
-                            ForEach(filteredTrainers, id: \.id) { trainer in
-                                HStack {
-                                    if let imagePath = trainer.profileImagePath,
-                                       let image = trainerVM.loadImageFromFileManager(path: imagePath) {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 70, height: 70)
-                                            .clipShape(Circle())
-                                    } else {
-                                        Circle()
-                                            .fill(Color.gray.opacity(0.3))
-                                            .frame(width: 70, height: 70)
-                                    }
+                        ScrollView {
+                            LazyVStack(spacing: 12) {
+                                ForEach(filteredTrainers.indices, id: \.self) { index in
+                                    let trainer = filteredTrainers[index]
 
-                                    VStack(alignment: .leading) {
-                                        Text(trainer.name ?? "No Name")
-                                            .font(.headline)
-                                            .foregroundStyle(Color.white)
-                                        Text(trainer.speciality ?? "No Speciality")
-                                            .font(.subheadline)
-                                            .foregroundStyle(Color.white)
-                                        Text(trainer.number ?? "No Number")
-                                            .font(.caption)
-                                            .foregroundColor(.yellow)
-                                            .bold()
+                                    HStack {
+                                        if let imagePath = trainer.profileImagePath,
+                                           let image = trainerVM.loadImageFromFileManager(path: imagePath) {
+                                            Image(uiImage: image)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 70, height: 70)
+                                                .clipShape(Circle())
+                                        } else {
+                                            Circle()
+                                                .fill(Color.gray.opacity(0.3))
+                                                .frame(width: 70, height: 70)
+                                        }
+
+                                        VStack(alignment: .leading) {
+                                            Text(trainer.name ?? "No Name")
+                                                .font(.headline)
+                                                .foregroundStyle(Color.white)
+                                            Text(trainer.speciality ?? "No Speciality")
+                                                .font(.subheadline)
+                                                .foregroundStyle(Color.white)
+                                            Text(trainer.number ?? "No Number")
+                                                .font(.caption)
+                                                .foregroundColor(.yellow)
+                                                .bold()
+                                        }
+                                        .bold()
+
+                                        Spacer()
+
+                                        Button {
+                                            trainerToEdit = trainer
+                                        } label: {
+                                            Image(systemName: "pencil")
+                                                .foregroundColor(.yellow)
+                                                .padding(8)
+                                                .background(Circle().fill(Color.black.opacity(0.6)))
+                                        }
+                                        .buttonStyle(.plain)
+
+                                        Button {
+                                            trainerToDelete = trainer
+                                            showDeleteAlert = true
+                                        } label: {
+                                            Image(systemName: "trash")
+                                                .foregroundColor(.red)
+                                                .padding(8)
+                                                .background(Circle().fill(Color.black.opacity(0.6)))
+                                        }
+                                        .buttonStyle(.plain)
                                     }
-                                    .bold()
-                                    Spacer()
-                                    Button {
-                                        trainerToEdit = trainer
-                                            } label: {
-                                        Image(systemName: "pencil")
-                                           .foregroundColor(.yellow)
-                                           .padding(8)
-                                            .background(Circle().fill(Color.black.opacity(0.6)))
-                                            }
-                                            .buttonStyle(.plain)
-                                }
-                                .id(trainer.id)
-                                .listRowBackground(Color.black.opacity(0.0))
-                                .onTapGesture {
-                                
-                                }
-                                Divider()
-                                    .frame(height: 10)
-                                    .listRowBackground(Color.white.opacity(0.0))
-                            }
-                            .onDelete { indexSet in
-                                if let index = indexSet.first {
-                                    trainerToDelete = filteredTrainers[index]
-                                    showDeleteAlert = true
+                                    .padding()
+                                    .background(index.isMultiple(of: 2) ? Color.black.opacity(0.4) : Color.black.opacity(0.2))
+                                    .cornerRadius(12)
+                                    .shadow(radius: 3)
+                                    .padding(.horizontal)
                                 }
                             }
+                            .padding(.vertical)
                         }
-                        .scrollContentBackground(.hidden)
                         .sheet(item: $trainerToEdit) { trainer in
                             EditTrainerSheet(viewModel: trainerVM, trainer: trainer)
                         }
@@ -130,18 +139,18 @@ struct TrainerView: View {
                 Button("Yes", role: .destructive) {
                     if let trainer = trainerToDelete {
                         trainerVM.deleteTrainer(trainer: trainer)
+                        trainerToDelete = nil
                     }
                 }
-                Button("No", role: .cancel) { }
+                Button("No", role: .cancel) {
+                    trainerToDelete = nil
+                }
             } message: {
                 Text("Are you sure you want to delete this trainer?")
             }
         }
     }
 }
-
-
-
 
 #Preview {
     TrainerView(context: PersistenceController.shared.container.viewContext)
@@ -156,75 +165,116 @@ struct AddTrainerSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("admin")
+                Image("addscreen")
                     .resizable()
+                    .scaledToFill()
                     .opacity(0.8)
                     .ignoresSafeArea()
-                
-                Form {
-                    Section("Profile Photo") {
-                        PhotosPicker(selection: $viewModel.selectedPhoto, matching: .images) {
-                            if let profileImage = viewModel.profileImage {
-                                Image(uiImage: profileImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 100, height: 100)
-                                    .clipShape(Circle())
-                            } else {
-                                Circle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .frame(width: 100, height: 100)
-                                    .overlay {
-                                        Image(systemName: "camera.fill")
-                                            .foregroundColor(.gray)
-                                    }
+
+                ScrollView {
+                    VStack(spacing: 20) {
+
+                        VStack {
+                            PhotosPicker(selection: $viewModel.selectedPhoto, matching: .images) {
+                                if let profileImage = viewModel.profileImage {
+                                    Image(uiImage: profileImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 120, height: 120)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.yellow, lineWidth: 3))
+                                        .shadow(radius: 5)
+                                } else {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 120, height: 120)
+                                        .overlay {
+                                            Image(systemName: "camera.fill")
+                                                .foregroundColor(.gray)
+                                                .font(.system(size: 30))
+                                        }
+                                }
                             }
-                        }
-                        .onChange(of: viewModel.selectedPhoto) { _, newValue in
-                            Task {
-                                if let data = try? await newValue?.loadTransferable(type: Data.self),
-                                   let uiImage = UIImage(data: data) {
-                                    await MainActor.run {
-                                        viewModel.profileImage = uiImage
+                            .onChange(of: viewModel.selectedPhoto) { _, newValue in
+                                Task {
+                                    if let data = try? await newValue?.loadTransferable(type: Data.self),
+                                       let uiImage = UIImage(data: data) {
+                                        await MainActor.run {
+                                            viewModel.profileImage = uiImage
+                                        }
                                     }
                                 }
                             }
+                            Text("Tap to choose profile photo")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
                         }
-                    }
-                    .listRowBackground(Color.white.opacity(0.9))
-                    
-                    Section("Trainer Details") {
-                        TextField("Name", text: $viewModel.name)
-                        TextField("Phone Number", text: $viewModel.number)
-                        
-                        Picker("Speciality", selection: $viewModel.speciality) {
-                            ForEach(Speciality.allCases) { speciality in
-                                Text(speciality.rawValue).tag(speciality)
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+
+                        VStack(spacing: 16) {
+                            TextField("Name", text: $viewModel.name)
+                                .padding()
+                                .frame(width: 380)
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+
+                            TextField("Phone Number", text: $viewModel.number)
+                                .keyboardType(.phonePad)
+                                .padding()
+                                .frame(width: 380)
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Speciality")
+                                    .foregroundColor(.white)
+                                    .font(.headline)
+                                Picker("", selection: $viewModel.speciality) {
+                                    ForEach(Speciality.allCases) { speciality in
+                                        Text(speciality.rawValue).tag(speciality)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(width: 380)
                             }
                         }
-                        .pickerStyle(.segmented)
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+
+                        
+                        Button(action: {
+                            viewModel.addTrainer()
+                            dismiss()
+                            viewModel.resetForm()
+                        }) {
+                            Text("Save Trainer")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(viewModel.isButtonvalid ? Color.red : Color.yellow)
+                                .foregroundColor(.black)
+                                .cornerRadius(12)
+                                .bold()
+                                .opacity(viewModel.isButtonvalid ? 0.6 : 1.0)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                )
+                        }
+                        .disabled(viewModel.isButtonvalid)
+                        .padding(.top, 10)
+                        .frame(width: 380)
                     }
-                    .listRowBackground(Color.white.opacity(0.9))
+                    .padding()
                 }
-                .scrollContentBackground(.hidden)
-                .background(Color.clear)
             }
             .navigationTitle("Add Trainer")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        viewModel.addTrainer()
-                        dismiss()
-                        viewModel.resetForm()
-                    }
-                    .disabled(viewModel.isButtonvalid)
-                    .bold()
-                    .foregroundStyle(viewModel.isButtonvalid ? Color.red : Color.yellow)
-                    .strikethrough(viewModel.isButtonvalid ? true : false, pattern: .solid)
-                    .animation(.easeInOut(duration: 1.0), value: viewModel.isButtonvalid)
-                    
-                }
-            }
+            .navigationBarTitleDisplayMode(.inline)
+            
         }
     }
 }
@@ -244,59 +294,120 @@ struct EditTrainerSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section(header: Text("Trainer Info")) {
-                    TextField("Name", text: $name)
-                    TextField("Speciality", text: $speciality)
-                    TextField("Number", text: $number)
-                        .keyboardType(.phonePad)
-                }
+            ZStack {
+                Image("admin")
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(0.8)
+                    .ignoresSafeArea()
 
-                Section(header: Text("Profile Image")) {
-                    PhotosPicker(selection: $photoItem, matching: .images, photoLibrary: .shared()) {
-                        if let selectedImage {
-                            Image(uiImage: selectedImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 150)
-                                .clipShape(Circle())
-                                .padding()
-                        } else {
-                            Text("Select Image")
-                        }
-                    }
-                    .onChange(of: photoItem) {_, newItem in
-                        Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self),
-                               let uiImage = UIImage(data: data) {
-                                selectedImage = uiImage
+                ScrollView {
+                    VStack(spacing: 20) {
+                        
+                        VStack {
+                            PhotosPicker(selection: $photoItem, matching: .images) {
+                                if let selectedImage {
+                                    Image(uiImage: selectedImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 120, height: 120)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.yellow, lineWidth: 3))
+                                        .shadow(radius: 5)
+                                } else {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 120, height: 120)
+                                        .overlay {
+                                            Image(systemName: "camera.fill")
+                                                .foregroundColor(.gray)
+                                                .font(.system(size: 30))
+                                        }
+                                }
                             }
+                            .onChange(of: photoItem) { _, newItem in
+                                Task {
+                                    if let data = try? await newItem?.loadTransferable(type: Data.self),
+                                       let uiImage = UIImage(data: data) {
+                                        selectedImage = uiImage
+                                    }
+                                }
+                            }
+                            Text("Tap to change profile photo")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
                         }
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+
+                        VStack(spacing: 16) {
+                            TextField("Name", text: $name)
+                                .padding()
+                                .frame(width: 380)
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+
+                            TextField("Speciality", text: $speciality)
+                                .padding()
+                                .frame(width: 380)
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+
+                            TextField("Phone Number", text: $number)
+                                .keyboardType(.phonePad)
+                                .padding()
+                                .frame(width: 380)
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+                        }
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+
+                        
+                        Button(action: {
+                            trainer.name = name
+                            trainer.speciality = speciality
+                            trainer.number = number
+
+                            if let selectedImage {
+                                if let path = viewModel.saveImageToFilemanager(image: selectedImage) {
+                                    trainer.profileImagePath = path
+                                }
+                            }
+
+                            viewModel.saveContext()
+                            dismiss()
+                        }) {
+                            Text("Save Changes")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.yellow)
+                                .foregroundColor(.black)
+                                .cornerRadius(12)
+                                .bold()
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                )
+                        }
+                        .padding(.top, 10)
+                        .frame(width: 380)
                     }
+                    .padding()
                 }
             }
             .navigationTitle("Edit Trainer")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        trainer.name = name
-                        trainer.speciality = speciality
-                        trainer.number = number
-
-                        if let selectedImage {
-                            if let path = viewModel.saveImageToFilemanager(image: selectedImage) {
-                                trainer.profileImagePath = path
-                            }
-                        }
-
-                        viewModel.saveContext()
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(.white)
                 }
             }
             .onAppear {

@@ -23,7 +23,7 @@ struct MemberView: View {
     @State private var showDeleteAlert = false
     @State private var memberToDelete: MemberEntity?
     @State private var memberToEdit: MemberEntity? = nil
-    @State private var memberToToggle: MemberEntity? = nil 
+    @State private var memberToToggle: MemberEntity? = nil
     @State private var filter: PaymentFilter = .all
     @State private var showConfirmation: Bool = false
     
@@ -82,84 +82,93 @@ struct MemberView: View {
                         .transition(.opacity.combined(with: .scale))
                         .animation(.easeInOut(duration: 0.4), value: memberVM.members.isEmpty)
                     } else {
-                        List {
-                            ForEach(filteredMembers, id: \.id) { member in
-                                HStack {
-                                    // Profile image
-                                    if let imagePath = member.profileImagePath,
-                                       let image = memberVM.loadImageFromFileManager(path: imagePath) {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 70, height: 70)
-                                            .clipShape(Circle())
-                                    } else {
-                                        Circle()
-                                            .fill(Color.gray.opacity(0.3))
-                                            .frame(width: 70, height: 70)
+                        ScrollView {
+                            LazyVStack(spacing: 16) {
+                                ForEach(filteredMembers, id: \.id) { member in
+                                    VStack {
+                                        HStack(alignment: .top, spacing: 12) {
+                                            if let imagePath = member.profileImagePath,
+                                               let image = memberVM.loadImageFromFileManager(path: imagePath) {
+                                                Image(uiImage: image)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 70, height: 70)
+                                                    .clipShape(Circle())
+                                            } else {
+                                                Circle()
+                                                    .fill(Color.gray.opacity(0.3))
+                                                    .frame(width: 70, height: 70)
+                                            }
+                                            
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(member.name ?? "No Name")
+                                                    .font(.headline)
+                                                    .foregroundStyle(Color.white)
+                                                Text(member.age ?? "No Age")
+                                                    .font(.subheadline)
+                                                    .foregroundStyle(Color.yellow)
+                                                    .bold()
+                                                Text(member.membershipType ?? "No Membership Type")
+                                                    .font(.subheadline)
+                                                    .foregroundStyle(Color.white)
+                                                Text(member.number ?? "No Number")
+                                                    .font(.caption)
+                                                    .foregroundColor(.yellow)
+                                                    .bold()
+                                                Text(member.isPaid ? "Paid" : "Unpaid")
+                                                    .font(.caption)
+                                                    .foregroundColor(member.isPaid ? .green : .red)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Button {
+                                                memberToEdit = member
+                                            } label: {
+                                                Image(systemName: "pencil")
+                                                    .foregroundColor(.yellow)
+                                                    .padding(8)
+                                                    .background(Circle().fill(Color.black.opacity(0.3)))
+                                            }
+                                            .buttonStyle(.plain)
+                                            Button {
+                                                    memberToDelete = member
+                                                     showDeleteAlert = true
+                                                     } label: {
+                                                     Image(systemName: "trash")
+                                                       .foregroundColor(.red)
+                                                        .padding(8)
+                                                        .background(Circle().fill(Color.black.opacity(0.3)))
+                                                     }
+                                                     .buttonStyle(.plain)
+                                        }
+                                        .onTapGesture(count: 2) {
+                                            if member.isPaid {
+                                                memberToToggle = member
+                                                showConfirmation = true
+                                            } else {
+                                                memberVM.togglePaymentStatus(member: member)
+                                            }
+                                        }
                                     }
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text(member.name ?? "No Name")
-                                            .font(.headline)
-                                            .foregroundStyle(Color.white)
-                                        Text(member.age ?? "No Age")
-                                            .font(.subheadline)
-                                            .foregroundStyle(Color.yellow)
-                                            .bold()
-                                        Text(member.membershipType ?? "No Membership Type")
-                                            .font(.subheadline)
-                                            .foregroundStyle(Color.white)
-                                        Text(member.number ?? "No Number")
-                                            .font(.caption)
-                                            .foregroundColor(.yellow)
-                                            .bold()
-                                        Text(member.isPaid ? "Paid" : "Unpaid")
-                                            .font(.caption)
-                                            .foregroundColor(member.isPaid ? .green : .red)
-                                    }
-                                    .bold()
-                                    
-                                    Spacer()
-                                    
-                                    Button {
-                                        memberToEdit = member
-                                    } label: {
-                                        Image(systemName: "pencil")
-                                            .foregroundColor(.yellow)
-                                            .padding(8)
-                                            .background(Circle().fill(Color.black.opacity(0.3)))
-                                    }
-                                    .buttonStyle(.plain)
+                                    .padding()
+                                    .background(Color.black.opacity(0.5))
+                                    .cornerRadius(12)
+                                    .shadow(radius: 5)
+                                    .padding(.horizontal)
                                 }
-                                .frame(height: 100)
-                                .listRowBackground(Color.black.opacity(0))
-                                .shadow(radius: 5)
-                                .contentShape(Rectangle())
-                                .onTapGesture(count: 2) {
-                                    if member.isPaid {
-                                        memberToToggle = member
-                                        showConfirmation = true
-                                    } else {
-                                        memberVM.togglePaymentStatus(member: member)
+                                .onDelete { indexSet in
+                                    if let index = indexSet.first {
+                                        memberToDelete = filteredMembers[index]
+                                        showDeleteAlert = true
                                     }
                                 }
-                                
-                                Divider()
-                                    .frame(height: 10)
-                                    .listRowBackground(Color.clear)
                             }
-                            .onDelete { indexSet in
-                                if let index = indexSet.first {
-                                    memberToDelete = filteredMembers[index]
-                                    showDeleteAlert = true
-                                }
-                            }
+                            .padding(.top)
                         }
                         .sheet(item: $memberToEdit) { member in
                             EditMemberSheet(viewModel: memberVM, member: member)
                         }
-                        .scrollContentBackground(.hidden)
                         .transition(.slide)
                         .animation(.easeInOut(duration: 0.5), value: memberVM.members)
                     }
@@ -211,6 +220,7 @@ struct MemberView: View {
 
 
 
+
 #Preview {
     MemberView(context: PersistenceController.shared.container.viewContext)
 }
@@ -225,76 +235,118 @@ struct AddMemberSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("muscule")
+                Image("addscreen")
                     .resizable()
+                    .scaledToFill()
                     .opacity(0.8)
                     .ignoresSafeArea()
 
-                Form {
-                    Section("Profile Photo") {
-                        PhotosPicker(selection: $viewModel.selectedPhoto, matching: .images) {
-                            if let profileImage = viewModel.profileImage {
-                                Image(uiImage: profileImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 100, height: 100)
-                                    .clipShape(Circle())
-                            } else {
-                                Circle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .frame(width: 100, height: 100)
-                                    .overlay {
-                                        Image(systemName: "camera.fill")
-                                            .foregroundColor(.gray)
-                                    }
+                ScrollView {
+                    VStack(spacing: 20) {
+                        VStack {
+                            PhotosPicker(selection: $viewModel.selectedPhoto, matching: .images) {
+                                if let profileImage = viewModel.profileImage {
+                                    Image(uiImage: profileImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 120, height: 120)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.yellow, lineWidth: 3))
+                                        .shadow(radius: 5)
+                                } else {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 120, height: 120)
+                                        .overlay {
+                                            Image(systemName: "camera.fill")
+                                                .foregroundColor(.gray)
+                                                .font(.system(size: 30))
+                                        }
+                                }
                             }
-                        }
-                        .onChange(of: viewModel.selectedPhoto) { _, newValue in
-                            Task {
-                                if let data = try? await newValue?.loadTransferable(type: Data.self),
-                                   let uiImage = UIImage(data: data) {
-                                    await MainActor.run {
-                                        viewModel.profileImage = uiImage
+                            .onChange(of: viewModel.selectedPhoto) { _, newValue in
+                                Task {
+                                    if let data = try? await newValue?.loadTransferable(type: Data.self),
+                                       let uiImage = UIImage(data: data) {
+                                        await MainActor.run {
+                                            viewModel.profileImage = uiImage
+                                        }
                                     }
                                 }
                             }
+                            Text("Tap to add profile photo")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
                         }
-                    }
-                    .listRowBackground(Color.white.opacity(0.9))
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
 
-                    Section("Member Details") {
-                        TextField("Name", text: $viewModel.name)
-                        TextField("Phone Number", text: $viewModel.number)
-                       TextField("Age", text: $viewModel.age)
+                        // Member Details Section
+                        VStack(spacing: 16) {
+                                 TextField("Name", text: $viewModel.name)
+                                     .padding()
+                                     .background(Color.white.opacity(0.9))
+                                     .cornerRadius(8)
+                                     .frame(width: 380)
 
-                        Picker("Membership Type", selection: $viewModel.membershipType) {
-                            ForEach(MembershipType.allCases) { type in
-                                Text(type.rawValue).tag(type)
-                            }
+                                 TextField("Phone Number", text: $viewModel.number)
+                                     .keyboardType(.phonePad)
+                                     .padding()
+                                     .background(Color.white.opacity(0.9))
+                                     .cornerRadius(8)
+                                     .frame(width: 380)
+
+                                 TextField("Age", text: $viewModel.age)
+                                     .keyboardType(.numberPad)
+                                     .padding()
+                                     .background(Color.white.opacity(0.9))
+                                     .cornerRadius(8)
+                                     .frame(width: 380)
+
+                                 Picker("Membership Type", selection: $viewModel.membershipType) {
+                                     ForEach(MembershipType.allCases) { type in
+                                         Text(type.rawValue).tag(type)
+                                     }
+                                 }
+                                 .pickerStyle(.segmented)
+                                 .frame(width: 380)
+                             }
+                             .background(Color.black.opacity(0.4))
+                             .cornerRadius(12)
+                             .shadow(radius: 4)
+                             .padding(.horizontal)
+                        Button(action: {
+                            viewModel.addMember()
+                            dismiss()
+                        }) {
+                            Text("Save Member")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(viewModel.isSaveButtonDisabled ? Color.gray : Color.yellow)
+                                .foregroundColor(.black)
+                                .cornerRadius(12)
+                                .bold()
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                )
                         }
-                        .pickerStyle(.segmented) 
+                        .disabled(viewModel.isSaveButtonDisabled)
+                        .padding(.top, 10)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.isSaveButtonDisabled)
                     }
-                    .listRowBackground(Color.white.opacity(0.9))
+                    .padding()
+                    .frame(width: 380)
                 }
-                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Add Member")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        viewModel.addMember()
-                        dismiss()
-                    }
-                    .disabled(viewModel.isSaveButtonDisabled)
-                    .bold()
-                    .foregroundStyle(viewModel.isSaveButtonDisabled ? Color.red : Color.yellow)
-                    .strikethrough(viewModel.isSaveButtonDisabled ? true : false, pattern: .solid)
-                    .animation(.easeInOut(duration: 1.0), value: viewModel.isSaveButtonDisabled)
-                }
-            }
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
+
 
 // MARK: The sheet \ View for editing the members
 struct EditMemberSheet: View {
@@ -302,83 +354,161 @@ struct EditMemberSheet: View {
     @State var member: MemberEntity
     @Environment(\.dismiss) var dismiss
 
+    // Local editable states
     @State private var name: String = ""
     @State private var age: String = ""
-    @State private var membershipType: String = ""
+    @State private var membershipType: MembershipType = .basic
     @State private var number: String = ""
     @State private var selectedImage: UIImage? = nil
     @State private var photoItem: PhotosPickerItem?
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section(header: Text("Personal Info")) {
-                    TextField("Name", text: $name)
-                    TextField("Age", text: $age)
-                        .keyboardType(.numberPad)
-                    TextField("Membership Type", text: $membershipType)
-                    TextField("Number", text: $number)
-                        .keyboardType(.phonePad)
-                }
+            ZStack {
+                Image("addscreen")
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(0.8)
+                    .ignoresSafeArea()
 
-                Section(header: Text("Profile Image")) {
-                    PhotosPicker(selection: $photoItem, matching: .images, photoLibrary: .shared()) {
-                        if let selectedImage {
-                            Image(uiImage: selectedImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 150)
-                                .clipShape(Circle())
-                                .padding()
-                        } else {
-                            Text("Select Image")
-                        }
-                    }
-                    .onChange(of: photoItem) {_ , newItem in
-                        Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self),
-                               let uiImage = UIImage(data: data) {
-                                selectedImage = uiImage
+                ScrollView {
+                    VStack(spacing: 20) {
+                        VStack {
+                            PhotosPicker(selection: $photoItem, matching: .images) {
+                                if let selectedImage {
+                                    Image(uiImage: selectedImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 120, height: 120)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.yellow, lineWidth: 3))
+                                        .shadow(radius: 5)
+                                } else {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 120, height: 120)
+                                        .overlay {
+                                            Image(systemName: "camera.fill")
+                                                .foregroundColor(.gray)
+                                                .font(.system(size: 30))
+                                        }
+                                }
                             }
+                            .onChange(of: photoItem) { _, newValue in
+                                Task {
+                                    if let data = try? await newValue?.loadTransferable(type: Data.self),
+                                       let uiImage = UIImage(data: data) {
+                                        await MainActor.run {
+                                            selectedImage = uiImage
+                                        }
+                                    }
+                                }
+                            }
+                            Text("Tap to change profile photo")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
                         }
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+
+                    
+                        VStack(spacing: 16) {
+                            TextField("Name", text: $name)
+                                .padding()
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+                                .frame(width: 380)
+
+                            TextField("Phone Number", text: $number)
+                                .keyboardType(.phonePad)
+                                .padding()
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+                                .frame(width: 380)
+
+                            TextField("Age", text: $age)
+                                .keyboardType(.numberPad)
+                                .padding()
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+                                .frame(width: 380)
+
+                            Picker("Membership Type", selection: $membershipType) {
+                                ForEach(MembershipType.allCases) { type in
+                                    Text(type.rawValue).tag(type)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .frame(width: 380)
+                        }
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+                        .padding(.horizontal)
+                        Button(action: saveMember) {
+                            Text("Save Changes")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(isSaveDisabled ? Color.gray : Color.yellow)
+                                .foregroundColor(.black)
+                                .cornerRadius(12)
+                                .bold()
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                )
+                        }
+                        .disabled(isSaveDisabled)
+                        .padding(.top, 10)
+                        .animation(.easeInOut(duration: 0.3), value: isSaveDisabled)
+                        .frame(width: 380)
                     }
+                    .padding()
+                    .frame(maxWidth: .infinity)
                 }
             }
             .navigationTitle("Edit Member")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        member.name = name
-                        member.age = age
-                        member.membershipType = membershipType
-                        member.number = number
-
-                        if let image = selectedImage {
-                            if let path = viewModel.saveImageToFileManager(image: image) {
-                                member.profileImagePath = path
-                            }
-                        }
-
-                        viewModel.saveContext()
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(.white)
                 }
             }
             .onAppear {
                 name = member.name ?? ""
                 age = member.age ?? ""
-                membershipType = member.membershipType ?? ""
                 number = member.number ?? ""
+                membershipType = MembershipType(rawValue: member.membershipType ?? "") ?? .basic
                 if let path = member.profileImagePath,
                    let image = viewModel.loadImageFromFileManager(path: path) {
                     selectedImage = image
                 }
             }
         }
+    }
+
+    var isSaveDisabled: Bool {
+        name.isEmpty || age.isEmpty || number.isEmpty
+    }
+
+    func saveMember() {
+        member.name = name
+        member.age = age
+        member.membershipType = membershipType.rawValue
+        member.number = number
+
+        if let image = selectedImage {
+            if let path = viewModel.saveImageToFileManager(image: image) {
+                member.profileImagePath = path
+            }
+        }
+
+        viewModel.saveContext()
+        dismiss()
     }
 }

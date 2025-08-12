@@ -16,8 +16,7 @@ struct AdminView: View {
     @StateObject private var memberVM: MemberViewModel
     @StateObject private var trainerVM: TrainerViewModel
     
-    @State private var adminToEdit: AdminEntity? // Only one state to handle edit
-
+    @State private var adminToEdit: AdminEntity? 
     init(isLoggedIn: Binding<Bool>, context: NSManagedObjectContext) {
         self._isLoggedIn = isLoggedIn
         self._adminVM = StateObject(wrappedValue: AdminViewModel(context: context))
@@ -123,7 +122,7 @@ struct AdminView: View {
             .toolbar {
                 if !adminVM.admins.isEmpty {
                     ToolbarItem(placement: .topBarLeading) {
-                        NavigationLink("Members") {
+                        NavigationLink("Members👥") {
                             MemberView(context: viewContext)
                         }
                         .foregroundStyle(Color.white)
@@ -338,62 +337,132 @@ struct EditAdminSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Admin Details") {
-                    TextField("Name", text: $name)
-                    TextField("Gym Name", text: $gymName)
-                    TextField("Gym Address", text: $gymAddress)
-                }
+            ZStack {
+                Image("addscreen")
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(0.8)
+                    .ignoresSafeArea()
 
-                Section("Profile Image") {
-                    PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                        Text("Select Image")
+                ScrollView {
+                    VStack(spacing: 20) {
+            
+                        VStack {
+                            PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                                if let profileImage {
+                                    Image(uiImage: profileImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 120, height: 120)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.yellow, lineWidth: 3))
+                                        .shadow(radius: 5)
+                                } else if let path = admin.profileImagePath,
+                                          let image = viewModel.loadImageFromFileManager(path: path) {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 120, height: 120)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.yellow, lineWidth: 3))
+                                        .shadow(radius: 5)
+                                } else {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 120, height: 120)
+                                        .overlay {
+                                            Image(systemName: "camera.fill")
+                                                .foregroundColor(.gray)
+                                                .font(.system(size: 30))
+                                        }
+                                }
+                            }
+                            .onChange(of: selectedPhoto) { _, newValue in
+                                Task {
+                                    if let newValue,
+                                       let data = try? await newValue.loadTransferable(type: Data.self),
+                                       let uiImage = UIImage(data: data) {
+                                        await MainActor.run {
+                                            profileImage = uiImage
+                                        }
+                                    }
+                                }
+                            }
+                            Text("Tap to change profile photo")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+
+                        VStack(spacing: 16) {
+                            TextField("Name", text: $name)
+                                .padding()
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+                                .frame(width: 380)
+
+                            TextField("Gym Name", text: $gymName)
+                                .padding()
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+                                .frame(width: 380)
+
+                            TextField("Gym Address", text: $gymAddress)
+                                .padding()
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(8)
+                                .frame(width: 380)
+                        }
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+                        .padding(.horizontal)
+
+                        Button(action: saveAdmin) {
+                            Text("Save Changes")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(isSaveDisabled ? Color.gray : Color.yellow)
+                                .foregroundColor(.black)
+                                .cornerRadius(12)
+                                .bold()
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                )
+                        }
+                        .disabled(isSaveDisabled)
+                        .padding(.top, 10)
+                        .animation(.easeInOut(duration: 0.3), value: isSaveDisabled)
+                        .frame(width: 380)
                     }
-                    if let profileImage {
-                        Image(uiImage: profileImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                    } else if let path = admin.profileImagePath,
-                              let image = viewModel.loadImageFromFileManager(path: path) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
                 }
             }
             .navigationTitle("Edit Admin")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        admin.name = name
-                        admin.gymName = gymName
-                        admin.gymAddress = gymAddress
-
-                        if let image = profileImage {
-                            let savedPath = viewModel.saveImageToFileManager(image: image)
-                            admin.profileImagePath = savedPath
-                        }
-
-                        viewModel.saveContext()
-                        dismiss()
-                    }
-                }
-            }
-            .onChange(of: selectedPhoto) { _, newValue in
-                Task {
-                    if let newValue, let data = try? await newValue.loadTransferable(type: Data.self),
-                       let uiImage = UIImage(data: data) {
-                        profileImage = uiImage
-                    }
-                }
-            }
+            .navigationBarTitleDisplayMode(.inline)
         }
+    }
+
+    var isSaveDisabled: Bool {
+        name.isEmpty || gymName.isEmpty || gymAddress.isEmpty
+    }
+
+    func saveAdmin() {
+        admin.name = name
+        admin.gymName = gymName
+        admin.gymAddress = gymAddress
+
+        if let image = profileImage {
+            let savedPath = viewModel.saveImageToFileManager(image: image)
+            admin.profileImagePath = savedPath
+        }
+
+        viewModel.saveContext()
+        dismiss()
     }
 }
