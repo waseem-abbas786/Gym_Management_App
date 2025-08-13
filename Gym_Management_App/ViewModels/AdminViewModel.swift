@@ -85,18 +85,18 @@ class AdminViewModel : ObservableObject, Identifiable {
         profileImage = nil
     }
 //    MARK: The user should only edit the admin no delete bcz if admin is deleted then why  we keep the data of memberes and trainers
-//    func deleteAdmins(at offsets: IndexSet) {
-//        offsets.forEach { index in
-//            let admin = admins[index]
-//            context.delete(admin)
-//        }
-//        do {
-//            try context.save()
-//            fetchAdmins()
-//        } catch {
-//            print("Failed to delete admin: \(error.localizedDescription)")
-//        }
-//    }
+    func deleteAdmins(at offsets: IndexSet) {
+        offsets.forEach { index in
+            let admin = admins[index]
+            context.delete(admin)
+        }
+        do {
+            try context.save()
+            fetchAdmins()
+        } catch {
+            print("Failed to delete admin: \(error.localizedDescription)")
+        }
+    }
     var isSaveButtonDisabled: Bool {
           name.isEmpty || gymName.isEmpty || gymAddress.isEmpty || password.isEmpty
       }

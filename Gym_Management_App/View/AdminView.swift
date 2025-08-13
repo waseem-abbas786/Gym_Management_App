@@ -7,6 +7,7 @@
 import SwiftUI
 import PhotosUI
 import CoreData
+import Combine
 
 struct AdminView: View {
     @Binding var isLoggedIn: Bool
@@ -265,11 +266,13 @@ struct AddAdminSheet: View {
 }
 
 
-//MARK: the slide view
+//MARK: the slide view by using combine
 struct GymQuoteSlider: View {
     let slides: [(quote: String, image: String)]
     @State private var currentIndex = 0
-    @State private var timer: Timer? = nil
+    
+    
+    let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
     
     var body: some View {
         ZStack {
@@ -294,25 +297,11 @@ struct GymQuoteSlider: View {
         .frame(maxWidth: .infinity)
         .frame(height: 350)
         .listRowBackground(Color.clear)
-        .onAppear {
-            startTimer()
-        }
-        .onDisappear {
-            stopTimer()
-        }
-    }
-    
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { _ in
+        .onReceive(timer) { _ in
             withAnimation(.easeInOut) {
-                currentIndex = (currentIndex + 1) % slides.count
+                currentIndex = currentIndex == 7 ? 0 : (currentIndex + 1) 
             }
         }
-    }
-    
-    private func stopTimer() {
-        timer?.invalidate()
-        timer = nil
     }
 }
 //MARK: the edit  view
