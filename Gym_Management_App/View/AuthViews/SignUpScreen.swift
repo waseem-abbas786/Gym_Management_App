@@ -8,40 +8,42 @@
 
 
 import SwiftUI
-
 struct SignUpScreen: View {
     @Binding var isLoggedIn: Bool
     @StateObject private var viewModel = SignInViewmodel()
-    @State private var email = ""
-    @State private var password = ""
     @State private var showError = false
     @State private var errorMessage = ""
     @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         ZStack {
             Image("signin")
                 .resizable()
                 .ignoresSafeArea()
                 .opacity(0.9)
+            
             VStack {
-                Text("Sign Up").font(.largeTitle)
+                Text("Sign Up")
+                    .font(.largeTitle)
                     .foregroundStyle(Color.white)
-                TextField("Email", text: $email)
+                
+                TextField("Email", text: $viewModel.email)
                     .padding()
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
                     .background(Color.white)
                     .clipShape(.buttonBorder)
                     .padding(.horizontal)
-
-                SecureField("Password", text: $password)
+                
+                SecureField("Password", text: $viewModel.password)
                     .padding()
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
                     .background(Color.white)
                     .clipShape(.buttonBorder)
                     .padding(.horizontal)
-                 Text("SignUp")
+                
+                Text("SignUp")
                     .frame(maxWidth: .infinity)
                     .frame(height: 55)
                     .foregroundStyle(Color.white)
@@ -50,9 +52,15 @@ struct SignUpScreen: View {
                     .shadow(color: .white, radius: 10, y: 10)
                     .padding()
                     .onTapGesture {
+                        if let error = viewModel.validationError {
+                            errorMessage = error
+                            showError = true
+                            return
+                        }
+                        
                         Task {
                             do {
-                                _ = try await viewModel.signUp(email: email, password: password)
+                                _ = try await viewModel.signUp(email: viewModel.email, password: viewModel.password)
                                 await MainActor.run {
                                     isLoggedIn = true
                                     dismiss()
@@ -65,11 +73,8 @@ struct SignUpScreen: View {
                             }
                         }
                     }
-
-               
             }
         }
-
         .alert("Error", isPresented: $showError) {
             Button("OK", role: .cancel) { }
         } message: {
