@@ -9,13 +9,14 @@ Manage gym owners, trainers, and members with a sleek interface and persistent s
 | Dashboard | Member List | Edit Member |
 |-----------|-------------|-------------|
 | ![Dashboard](assets/dashboard.png) | ![Members](assets/members.png) | ![Edit](assets/edit.png) |
-<img width="473" height="958" alt="adminDashboard" src="https://github.com/user-attachments/assets/aa0a66c0-2d16-43d0-9fb6-e8ebb781f501" />
-<img width="489" height="964" alt="editadmin" src="https://github.com/user-attachments/assets/759ffa7d-3ebc-4904-b503-c26b8c7d6ddd" />
-<img width="464" height="917" alt="member" src="https://github.com/user-attachments/assets/c77e1171-2e98-4efa-8bfd-3d09649e0dfa" />
-<img width="484" height="962" alt="trainer" src="https://github.com/user-attachments/assets/6e4619a3-9461-4de6-93d9-4f951f14fd70" />
-<img width="469" height="927" alt="searchTrainer" src="https://github.com/user-attachments/assets/7235c0d2-9a58-475c-87ca-ff31a4830819" />
-<img width="445" height="944" alt="Signup" src="https://github.com/user-attachments/assets/b8aa09ff-0bba-4dbe-a368-cec840445afb" />
-<img width="484" height="962" alt="trainer" src="https://github.com/user-attachments/assets/792daf6a-fb81-40ee-b8a4-ee3e0f02f86b" />
+<img width="473" height="986" alt="Screenshot 2025-08-16 at 5 08 08 AM" src="https://github.com/user-attachments/assets/f0a4fbcf-8a81-4af8-a660-b54241c4117b" />
+<img width="485" height="952" alt="Screenshot 2025-08-16 at 5 08 17 AM" src="https://github.com/user-attachments/assets/f6da8c4e-9aa4-4ae2-805c-5a3f69620d34" /><img width="462" height="950" alt="Screenshot 2025-08-16 at 5 07 01 AM" src="https://github.com/user-attachments/assets/d3077c17-9276-48e6-aa20-e382f1429710" />
+<img width="479" height="971" alt="Screenshot 2025-08-16 at 5 07 29 AM" src="https://github.com/user-attachments/assets/b001c483-3b37-4a3e-a1f7-c8ce30017aa9" />
+<img width="443" height="944" alt="Screenshot 2025-08-16 at 5 07 48 AM" src="https://github.com/user-attachments/assets/cc6c1604-59b4-4fc1-8e7b-f4240a5b2380" />
+<img width="425" height="961" alt="Screenshot 2025-08-16 at 5 07 18 AM" src="https://github.com/user-attachments/assets/68028df2-8050-4513-952e-f2ef313e6b5c" />
+
+<img width="454" height="973" alt="Screenshot 2025-08-16 at 5 08 00 AM" src="https://github.com/user-attachments/assets/82c700a3-dddb-4e46-8245-d63e2b82cdc6" />
+
 
 
 
