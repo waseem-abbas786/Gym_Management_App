@@ -21,6 +21,7 @@ class MemberViewModel : ObservableObject {
     @Published var selectedPhoto: PhotosPickerItem?
     @Published var profileImage: UIImage?
     @Published var isPaid : Bool = false
+    var manager = ImageManager.instance
     
     private let context : NSManagedObjectContext
     init (context : NSManagedObjectContext) {
@@ -46,7 +47,7 @@ class MemberViewModel : ObservableObject {
         newMember.isPaid = isPaid
 
         if let image = profileImage {
-            let savedFileName = saveImageToFileManager(image: image)
+            let savedFileName = manager.saveImageToFileManager(image: image)
             newMember.profileImagePath = savedFileName
         }
 
@@ -87,30 +88,6 @@ class MemberViewModel : ObservableObject {
     func togglePaymentStatus(member: MemberEntity) {
         member.isPaid.toggle()
         saveContext()
-    }
-
-
-        func saveImageToFileManager(image: UIImage) -> String? {
-        guard let data = image.jpegData(compressionQuality: 0.8) else { return nil }
-        let filename = UUID().uuidString + ".jpg"
-        let url = getDocumentsDirectory().appendingPathComponent(filename)
-
-        do {
-            try data.write(to: url)
-            return filename
-        } catch {
-            print("Error saving image: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
-    func loadImageFromFileManager(path: String) -> UIImage? {
-        let url = getDocumentsDirectory().appendingPathComponent(path)
-        return UIImage(contentsOfFile: url.path)
-    }
-
-    private func getDocumentsDirectory() -> URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     var isSaveButtonDisabled: Bool {
         name.isEmpty || number.isEmpty
