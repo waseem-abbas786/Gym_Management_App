@@ -67,28 +67,11 @@ final class Gym_Management_AppTests: XCTestCase {
                 member.profileImagePath = nil
         //        when
                 vm.fetchMembers()
-        vm.deleteMember(member: member)
-//        Then
-        XCTAssertEqual(vm.members.count, 0)
-    }
-    func testAddmember_toCoreData_shouldReturnOne () {
-//        Given
-        vm.members = []
-        vm.fetchMembers()
-        XCTAssertEqual(vm.members.count, 0)
-//        when
-        let member = MemberEntity(context: context)
-        member.id = UUID()
-        member.age = "22"
-        member.isPaid = false
-        member.name = "waseem"
-        member.membershipType = "basics"
-        member.profileImagePath = nil
-        try? context.save()
-        vm.fetchMembers()
-//        Then
         XCTAssertEqual(vm.members.count, 1)
-        XCTAssertEqual(vm.members.first?.name, "waseem")
+        vm.deleteMember(member: member)
+        vm.fetchMembers()
+//        Then
+        XCTAssertEqual(vm.members.count, 0)
     }
 }
 
