@@ -125,3 +125,7 @@ struct AddMemberSheet: View {
         }
     }
 }
+#Preview {
+    AddMemberSheet(viewModel: MemberViewModel(context: PersistenceController.preview.container.viewContext)
+                   )
+}
