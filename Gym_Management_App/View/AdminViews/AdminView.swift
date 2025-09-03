@@ -106,7 +106,7 @@ struct AdminView: View {
                                 statCard(title: "Total Trainers", count: trainerVM.trainers.count)
                             }
                             .listRowBackground(Color.clear)
-
+                            
                             Section {
                                 GymQuoteSlider(slides: gymSlides)
                                     .listRowBackground(Color.clear)
@@ -124,20 +124,30 @@ struct AdminView: View {
             .toolbar {
                 if !adminVM.admins.isEmpty {
                     ToolbarItem(placement: .topBarLeading) {
-                        NavigationLink("Members👥") {
+                        NavigationLink("Members") {
                             MemberView(context: viewContext)
                         }
+                        .font(.headline)
+                        .foregroundStyle(Color.white)
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
+                        NavigationLink("Nuitritions")
+                        {
+                            NutritionView()
+                        }
+                        .font(.headline)
                         .foregroundStyle(Color.white)
                     }
                     ToolbarItem(placement: .topBarTrailing) {
-                        NavigationLink("Trainers🏋🏻‍♀️") {
+                        NavigationLink("Trainers") {
                             TrainerView(context: viewContext)
                         }
+                        .font(.headline)
                         .foregroundStyle(Color.white)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Log Out") {
+                    Button("LogOut") {
                         do {
                             try viewModel.signOut()
                             isLoggedIn = false
@@ -145,6 +155,7 @@ struct AdminView: View {
                             print("Logout failed: \(error.localizedDescription)")
                         }
                     }
+                    .font(.headline)
                     .foregroundStyle(Color.white)
                 }
                 if adminVM.admins.isEmpty {
@@ -152,6 +163,7 @@ struct AdminView: View {
                         NavigationLink("Manage Admin") {
                             AddAdminSheet(viewModel: adminVM)
                         }
+                        .font(.headline)
                         .foregroundStyle(Color.white)
                     }
                 }
