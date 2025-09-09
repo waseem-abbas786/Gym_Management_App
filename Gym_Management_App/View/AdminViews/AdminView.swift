@@ -9,18 +9,20 @@ import PhotosUI
 import CoreData
 import Combine
 
-struct AdminView: View {
-    @Binding var isLoggedIn: Bool
-    @StateObject private var viewModel = SignInViewmodel()
+struct AdminView: View {    @Binding var isLoggedIn: Bool
     @Environment(\.managedObjectContext) private var viewContext
+
+    @StateObject private var viewModel: SignInViewmodel
     @StateObject private var adminVM: AdminViewModel
     @StateObject private var memberVM: MemberViewModel
     @StateObject private var trainerVM: TrainerViewModel
+
     var manager = ImageManager.instance
-    
     @State private var adminToEdit: AdminEntity?
+
     init(isLoggedIn: Binding<Bool>, context: NSManagedObjectContext) {
         self._isLoggedIn = isLoggedIn
+        self._viewModel = StateObject(wrappedValue: SignInViewmodel(context: context)) 
         self._adminVM = StateObject(wrappedValue: AdminViewModel(context: context))
         self._memberVM = StateObject(wrappedValue: MemberViewModel(context: context))
         self._trainerVM = StateObject(wrappedValue: TrainerViewModel(context: context))

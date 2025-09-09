@@ -18,17 +18,24 @@ class AdminViewModel : ObservableObject, Identifiable {
     
     init (context : NSManagedObjectContext) {
         self.context = context
-        fetchAdmins()
+
     }
     
-    func fetchAdmins () {
-        let request : NSFetchRequest<AdminEntity> = AdminEntity.fetchRequest()
+    func fetchAdmins() {
+        // Check if context is ready
+        guard context.persistentStoreCoordinator != nil else {
+            print("Context not ready, skipping fetchAdmins()")
+            return
+        }
+
+        let request: NSFetchRequest<AdminEntity> = AdminEntity.fetchRequest()
         do {
             admins = try context.fetch(request)
         } catch {
-            print("Error Fetching admins : \(error)")
+            print("Error Fetching admins: \(error)")
         }
     }
+
     
     func addAdmin() {
         let newAdmin = AdminEntity(context: context)

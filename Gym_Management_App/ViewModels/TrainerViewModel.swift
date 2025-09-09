@@ -23,6 +23,10 @@ class TrainerViewModel : ObservableObject {
         self.context = context
     }
     func fetchTrainers () {
+        guard context.persistentStoreCoordinator != nil else {
+               print("Context not ready, skipping fetchTrainers()")
+               return
+           }
         let request : NSFetchRequest <TrainerEntity> = TrainerEntity.fetchRequest()
         do {
             trainers = try context.fetch(request)

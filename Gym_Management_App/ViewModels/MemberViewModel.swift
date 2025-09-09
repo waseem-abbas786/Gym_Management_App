@@ -29,6 +29,10 @@ class MemberViewModel : ObservableObject {
     }
     
     func fetchMembers () {
+        guard context.persistentStoreCoordinator != nil else {
+               print("Context not ready, skipping fetchmembers()")
+               return
+           }
         let request : NSFetchRequest<MemberEntity> = MemberEntity.fetchRequest()
         do {
            members = try context.fetch(request)

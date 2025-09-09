@@ -8,13 +8,12 @@ struct PersistenceController {
 
         let viewContext = controller.container.viewContext
 
-        // Sample Admin
         let sampleAdmin = AdminEntity(context: viewContext)
         sampleAdmin.id = UUID()
         sampleAdmin.name = "Preview Admin"
         sampleAdmin.gymName = "Preview Gym"
         sampleAdmin.gymAddress = "123 Preview Street"
-        sampleAdmin.profileImagePath = nil
+        sampleAdmin.profileImagePath = "ajsjkasa"
         
         let sampleTrainer = TrainerEntity(context: viewContext)
         sampleTrainer.id = UUID()
