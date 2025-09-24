@@ -61,8 +61,6 @@ struct AddMemberSheet: View {
                         .background(Color.black.opacity(0.4))
                         .cornerRadius(12)
                         .shadow(radius: 4)
-
-                        // Member Details Section
                         VStack(spacing: 16) {
                                  TextField("Name", text: $viewModel.name)
                                      .padding()
@@ -70,7 +68,7 @@ struct AddMemberSheet: View {
                                      .cornerRadius(8)
                                      .frame(width: 380)
 
-                                 TextField("Phone Number", text: $viewModel.number)
+                            TextField("Phone Number", text: $viewModel.number)
                                      .keyboardType(.phonePad)
                                      .padding()
                                      .background(Color.white.opacity(0.9))

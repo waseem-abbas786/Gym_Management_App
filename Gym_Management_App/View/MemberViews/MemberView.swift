@@ -106,17 +106,6 @@ struct MemberView: View {
                                                     Text(member.name ?? "No Name")
                                                         .font(.headline)
                                                         .foregroundStyle(Color.white)
-                                                    Text(member.age ?? "No Age")
-                                                        .font(.subheadline)
-                                                        .foregroundStyle(Color.yellow)
-                                                        .bold()
-                                                    Text(member.membershipType ?? "No Membership Type")
-                                                        .font(.subheadline)
-                                                        .foregroundStyle(Color.white)
-                                                    Text(member.number ?? "No Number")
-                                                        .font(.caption)
-                                                        .foregroundColor(.yellow)
-                                                        .bold()
                                                     Text(member.isPaid ? "Paid" : "Unpaid")
                                                         .font(.caption)
                                                         .foregroundColor(member.isPaid ? .green : .red)
@@ -232,8 +221,39 @@ struct MemberView: View {
 struct DetailView : View {
     let member : MemberEntity
     var body: some View {
-        Text("Hello")
-    }
+        NavigationStack {
+            ZStack {
+                Image("muscule")
+                    .resizable()
+                    .padding(.top, 34)
+                    .ignoresSafeArea(edges: .bottom)
+                    .opacity(0.9)
+                Spacer()
+                VStack {
+                    Text("The age of \(member.name ?? "") is \(member.age ?? "No Age")")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.yellow)
+                        .bold()
+                    Text("The membershipType of  : \(member.name ?? "") Is \(member.membershipType ?? "No Membership Type")")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.white)
+                    Text("The Phone Number of \(member.name ?? "") is \(member.number ?? "No Number")")
+                        .font(.caption)
+                        .foregroundColor(.yellow)
+                        .bold()
+                }
+                .frame(height: 200)
+                .frame(maxWidth: .infinity)
+                .background(Color.black.opacity(0.8))
+                Spacer()
+                VStack {
+                    
+                }
+            }
+            .navigationTitle("\(member.name ?? "") Info")
+        }
+ 
+     }
 }
 
 
