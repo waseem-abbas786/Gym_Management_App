@@ -86,77 +86,80 @@ struct MemberView: View {
                         ScrollView {
                             LazyVStack(spacing: 16) {
                                 ForEach(filteredMembers, id: \.id) { member in
-                                    VStack {
-                                        HStack(alignment: .top, spacing: 12) {
-                                            if let imagePath = member.profileImagePath,
-                                               let image = manager.loadImageFromFileManager(path: imagePath) {
-                                                Image(uiImage: image)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 70, height: 70)
-                                                    .clipShape(Circle())
-                                            } else {
-                                                Circle()
-                                                    .fill(Color.gray.opacity(0.3))
-                                                    .frame(width: 70, height: 70)
-                                            }
-                                            
-                                            VStack(alignment: .leading, spacing: 4) {
-                                                Text(member.name ?? "No Name")
-                                                    .font(.headline)
-                                                    .foregroundStyle(Color.white)
-                                                Text(member.age ?? "No Age")
-                                                    .font(.subheadline)
-                                                    .foregroundStyle(Color.yellow)
-                                                    .bold()
-                                                Text(member.membershipType ?? "No Membership Type")
-                                                    .font(.subheadline)
-                                                    .foregroundStyle(Color.white)
-                                                Text(member.number ?? "No Number")
-                                                    .font(.caption)
-                                                    .foregroundColor(.yellow)
-                                                    .bold()
-                                                Text(member.isPaid ? "Paid" : "Unpaid")
-                                                    .font(.caption)
-                                                    .foregroundColor(member.isPaid ? .green : .red)
-                                            }
-                                            
-                                            Spacer()
-                                            
-                                            Button {
-                                                memberToEdit = member
-                                            } label: {
-                                                Image(systemName: "pencil")
-                                                    .foregroundColor(.yellow)
-                                                    .padding(8)
-                                                    .background(Circle().fill(Color.black.opacity(0.3)))
-                                            }
-                                            .buttonStyle(.plain)
-                                            Button {
-                                                    memberToDelete = member
-                                                     showDeleteAlert = true
-                                                     } label: {
-                                                     Image(systemName: "trash")
-                                                       .foregroundColor(.red)
+                                    NavigationLink(destination: DetailView(member: member)) {
+                                        VStack {
+                                            HStack(alignment: .top, spacing: 12) {
+                                                if let imagePath = member.profileImagePath,
+                                                   let image = manager.loadImageFromFileManager(path: imagePath) {
+                                                    Image(uiImage: image)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: 70, height: 70)
+                                                        .clipShape(Circle())
+                                                } else {
+                                                    Circle()
+                                                        .fill(Color.gray.opacity(0.3))
+                                                        .frame(width: 70, height: 70)
+                                                }
+                                                
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    Text(member.name ?? "No Name")
+                                                        .font(.headline)
+                                                        .foregroundStyle(Color.white)
+                                                    Text(member.age ?? "No Age")
+                                                        .font(.subheadline)
+                                                        .foregroundStyle(Color.yellow)
+                                                        .bold()
+                                                    Text(member.membershipType ?? "No Membership Type")
+                                                        .font(.subheadline)
+                                                        .foregroundStyle(Color.white)
+                                                    Text(member.number ?? "No Number")
+                                                        .font(.caption)
+                                                        .foregroundColor(.yellow)
+                                                        .bold()
+                                                    Text(member.isPaid ? "Paid" : "Unpaid")
+                                                        .font(.caption)
+                                                        .foregroundColor(member.isPaid ? .green : .red)
+                                                }
+                                                
+                                                Spacer()
+                                                
+                                                Button {
+                                                    memberToEdit = member
+                                                } label: {
+                                                    Image(systemName: "pencil")
+                                                        .foregroundColor(.yellow)
                                                         .padding(8)
                                                         .background(Circle().fill(Color.black.opacity(0.3)))
-                                                     }
-                                                     .buttonStyle(.plain)
-                                        }
-                                        .onTapGesture(count: 2) {
-                                            if member.isPaid {
-                                                memberToToggle = member
-                                                showConfirmation = true
-                                            } else {
-                                                memberVM.togglePaymentStatus(member: member)
+                                                }
+                                                .buttonStyle(.plain)
+                                                Button {
+                                                        memberToDelete = member
+                                                         showDeleteAlert = true
+                                                         } label: {
+                                                         Image(systemName: "trash")
+                                                           .foregroundColor(.red)
+                                                            .padding(8)
+                                                            .background(Circle().fill(Color.black.opacity(0.3)))
+                                                         }
+                                                         .buttonStyle(.plain)
+                                            }
+                                            .onTapGesture(count: 2) {
+                                                if member.isPaid {
+                                                    memberToToggle = member
+                                                    showConfirmation = true
+                                                } else {
+                                                    memberVM.togglePaymentStatus(member: member)
+                                                }
                                             }
                                         }
+                                        .padding()
+                                        .background(Color.black.opacity(0.5))
+                                        .cornerRadius(12)
+                                        .shadow(radius: 5)
+                                        .padding(.horizontal)
                                     }
-                                    .padding()
-                                    .background(Color.black.opacity(0.5))
-                                    .cornerRadius(12)
-                                    .shadow(radius: 5)
-                                    .padding(.horizontal)
+                                    
                                 }
                                 .onDelete { indexSet in
                                     if let index = indexSet.first {
@@ -226,6 +229,11 @@ struct MemberView: View {
     MemberView(context: PersistenceController.shared.container.viewContext)
 }
 
-
+struct DetailView : View {
+    let member : MemberEntity
+    var body: some View {
+        Text("Hello")
+    }
+}
 
 
