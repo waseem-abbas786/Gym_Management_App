@@ -68,7 +68,7 @@ class SignInViewmodel: ObservableObject {
 
     func signOut() throws {
         try Auth.auth().signOut()
-        clearCoreData() // Safe here because context is ready
+        clearCoreData()
     }
 
     func signIn() async throws -> AuthModel {
@@ -93,16 +93,14 @@ class SignInViewmodel: ObservableObject {
             throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: error])
         }
 
-        try? Auth.auth().signOut() // Sign out previous user
+        try? Auth.auth().signOut()
 
         isLoading = true
         defer { isLoading = false }
 
-        // ✅ Firebase signup only
         let authResult = try await Auth.auth().createUser(withEmail: email, password: password)
         let userModel = AuthModel(user: authResult.user)
 
-        // Clear local form
         email = ""
         password = ""
 

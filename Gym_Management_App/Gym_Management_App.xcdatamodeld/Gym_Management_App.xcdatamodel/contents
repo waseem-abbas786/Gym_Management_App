@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24G84" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24G90" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AdminEntity" representedClassName="AdminEntity" syncable="YES" codeGenerationType="class">
         <attribute name="gymAddress" optional="YES" attributeType="String"/>
         <attribute name="gymName" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="profileImagePath" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="DietPlanEntity" representedClassName="DietPlanEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="dietPlan" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="MemberEntity" representedClassName="MemberEntity" syncable="YES" codeGenerationType="class">
         <attribute name="age" optional="YES" attributeType="String"/>

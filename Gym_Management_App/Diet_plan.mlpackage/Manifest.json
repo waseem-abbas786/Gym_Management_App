@@ -1,0 +1,24 @@
+{
+    "fileFormatVersion": "1.0.0",
+    "itemInfoEntries": {
+        "043D9CAE-920A-4881-8123-EC8FB79EC8E2": {
+            "author": "com.apple.CoreML",
+            "description": "External Metadata Overlay",
+            "name": "Metadata.json",
+            "path": "com.apple.CoreML/Metadata.json"
+        },
+        "1933C9E1-5149-4558-AC0F-AA46C30909A0": {
+            "author": "com.apple.CoreML",
+            "description": "External FeatureDescription Overlay",
+            "name": "FeatureDescriptions.json",
+            "path": "com.apple.CoreML/FeatureDescriptions.json"
+        },
+        "8936BDE5-3A38-49BA-9322-E1A74ACA48DD": {
+            "author": "com.apple.CoreML",
+            "description": "CoreML Model Specification",
+            "name": "Diet_plan.mlmodel",
+            "path": "com.apple.CoreML/Diet_plan.mlmodel"
+        }
+    },
+    "rootModelIdentifier": "8936BDE5-3A38-49BA-9322-E1A74ACA48DD"
+}

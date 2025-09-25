@@ -1,0 +1,33 @@
+{
+  "Inputs" : {
+    "age" : {
+      "MLFeatureShortDescription" : "--"
+    },
+    "weight_kg" : {
+      "MLFeatureShortDescription" : "--"
+    },
+    "height_cm" : {
+      "MLFeatureShortDescription" : "--"
+    },
+    "timeframe_weeks" : {
+      "MLFeatureShortDescription" : "--"
+    },
+    "goal" : {
+      "MLFeatureShortDescription" : "--"
+    }
+  },
+  "Outputs" : {
+    "diet_plan" : {
+      "MLFeatureShortDescription" : "--"
+    },
+    "diet_planProbability" : {
+      "MLFeatureShortDescription" : "--"
+    }
+  },
+  "TrainingInputs" : {
+
+  },
+  "States" : {
+
+  }
+}
