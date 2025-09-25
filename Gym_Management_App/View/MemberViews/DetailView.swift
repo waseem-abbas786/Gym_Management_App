@@ -7,9 +7,6 @@
 
 import SwiftUI
 struct DetailView : View {
-    @Environment(\.managedObjectContext) private var context
-    @StateObject var viewModel : CoreMlViewModel
-    @State var isSheetOn : Bool = false
     let member : MemberEntity
     var body: some View {
         NavigationStack {
@@ -38,28 +35,15 @@ struct DetailView : View {
                 .background(Color.black.opacity(0.8))
                 Spacer()
                 VStack {
-                    if let plan = viewModel.latestPlan {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("🍽 Diet Plan")
-                                .font(.headline)
-                            TextEditor(text: .constant(plan.dietPlan ?? ""))
-                                .frame(height: 120)
-                                .padding(6)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(10)
-                                .disabled(true)
-                        }
                     }
                 }
             }
             .navigationTitle("\(member.name ?? "") Info")
-            .sheet(isPresented: $isSheetOn) {
-                GeneratePlanView(context: context)
-            }
+
         }
  
      }
-}
+
 
 
 

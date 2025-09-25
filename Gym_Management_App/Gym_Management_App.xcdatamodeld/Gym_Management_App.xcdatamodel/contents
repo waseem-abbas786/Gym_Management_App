@@ -7,10 +7,7 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="profileImagePath" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="DietPlanEntity" representedClassName="DietPlanEntity" syncable="YES" codeGenerationType="class">
-        <attribute name="dietPlan" optional="YES" attributeType="String"/>
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-    </entity>
+    <entity name="DietPlanEntity" representedClassName="DietPlanEntity" syncable="YES" codeGenerationType="class"/>
     <entity name="MemberEntity" representedClassName="MemberEntity" syncable="YES" codeGenerationType="class">
         <attribute name="age" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
