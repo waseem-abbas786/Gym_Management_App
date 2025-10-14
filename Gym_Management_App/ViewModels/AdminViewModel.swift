@@ -53,6 +53,7 @@ class AdminViewModel : ObservableObject, Identifiable {
             do {
                 try context.save()
                 fetchAdmins()
+                print("Button clicked!")
             } catch  {
                 print("Error saving Admin: \(error.localizedDescription)")
             }

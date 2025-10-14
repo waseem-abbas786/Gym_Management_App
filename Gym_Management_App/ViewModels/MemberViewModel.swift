@@ -1,6 +1,10 @@
 
 
 import Foundation
+import CoreData
+import UIKit
+import _PhotosUI_SwiftUI
+
 enum MembershipType : String, Identifiable,CaseIterable {
     case basic = "Basic"
     case medium = "Medium"
@@ -8,9 +12,11 @@ enum MembershipType : String, Identifiable,CaseIterable {
     case ultraPremium = "UltraPremium"
     var id: String { self.rawValue }
 }
-import CoreData
-import UIKit
-import _PhotosUI_SwiftUI
+enum PaymentFilter: String, CaseIterable {
+    case all = "All"
+    case paid = "Paid"
+    case unpaid = "Unpaid"
+}
 
 class MemberViewModel : ObservableObject {
     @Published var members : [MemberEntity] = []
@@ -21,7 +27,33 @@ class MemberViewModel : ObservableObject {
     @Published var selectedPhoto: PhotosPickerItem?
     @Published var profileImage: UIImage?
     @Published var isPaid : Bool = false
+    @Published var searchText = ""
+    @Published var filter: PaymentFilter = .all
     var manager = ImageManager.instance
+    
+    var filteredMembers: [MemberEntity] {
+        let baseList: [MemberEntity]
+        
+        if searchText.isEmpty {
+            baseList = members
+        } else {
+            baseList = members.filter {
+                ($0.name ?? "").localizedCaseInsensitiveContains(searchText) ||
+                ($0.membershipType ?? "").localizedCaseInsensitiveContains(searchText) ||
+                ($0.age ?? "").localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        
+        switch filter {
+        case .all:
+            return baseList
+        case .paid:
+            return baseList.filter { $0.isPaid }
+        case .unpaid:
+            return baseList.filter { !$0.isPaid }
+        }
+    }
+    
     
     private let context : NSManagedObjectContext
     init (context : NSManagedObjectContext) {
@@ -116,7 +148,6 @@ class MemberViewModel : ObservableObject {
             }
         }
     }
-
 }
 
 
